@@ -184,3 +184,108 @@ curl -X POST http://localhost:4000/user/login \
 **Note:**  
 - Both fields are required.
 - The endpoint returns a JWT token upon successful login.
+
+---
+
+## User Profile Endpoint
+
+### `GET /user/profile`
+
+Returns the profile of the authenticated user.
+
+---
+
+### **Headers**
+
+- `Authorization: Bearer <JWT Token>`
+
+or
+
+- Send the token as a cookie named `token`.
+
+---
+
+### **Responses**
+
+#### **200 OK**
+- **Description:** Returns the authenticated user's profile.
+- **Body:**
+  ```json
+  {
+    "_id": "user_id",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com",
+    "phone": "1234567890",
+    // ...other user fields
+  }
+  ```
+
+#### **401 Unauthorized**
+- **Description:** Token is missing, invalid, expired, or blacklisted.
+- **Body:**
+  ```json
+  {
+    "message": "Unauthorized access"
+  }
+  ```
+
+---
+
+### **Example cURL Request**
+
+```sh
+curl -X GET http://localhost:4000/user/profile \
+  -H "Authorization: Bearer <JWT Token>"
+```
+
+---
+
+## User Logout Endpoint
+
+### `POST /user/logout`
+
+Logs out the authenticated user by blacklisting their JWT token.
+
+---
+
+### **Headers**
+
+- `Authorization: Bearer <JWT Token>`
+
+or
+
+- Send the token as a cookie named `token`.
+
+---
+
+### **Responses**
+
+#### **200 OK**
+- **Description:** User logged out successfully.
+- **Body:**
+  ```json
+  {
+    "message": "Logged out successfully"
+  }
+  ```
+
+#### **401 Unauthorized**
+- **Description:** Token is missing, invalid, expired, or already blacklisted.
+- **Body:**
+  ```json
+  {
+    "message": "Unauthorized access"
+  }
+  ```
+
+---
+
+### **Example cURL Request**
+
+```sh
+curl -X POST http://localhost:4000/user/logout \
+  -H "Authorization: Bearer <JWT Token>"
+```

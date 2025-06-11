@@ -1,3 +1,4 @@
+const blacklistTokenModel = require('../models/blacklistToken.model')
 const userModel = require('../models/user.model')
 const userService = require('../services/user.service')
 const { validationResult } = require('express-validator')
@@ -50,4 +51,21 @@ module.exports.loginUser = async (req, res, next) => {
 
     res.status(200).json({token, user})
 
+}
+
+module.exports.getUserProfile = async(req, res, next) => {
+    res.status(200).json(req.user)
+}
+
+module.exports.logoutUser = async (req, res, next) => {
+
+    res.clearCookie('token')
+
+    // Clear the token from cookies or headers
+    const token = req.cookies.token || req.headers.authorization.split(' ')[1]
+    await blacklistTokenModel.create({ token })
+    // This will prevent the token from being used again in the future.
+
+
+    res.status(200).json({ message: 'Logged out successfully' })
 }
