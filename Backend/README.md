@@ -14,8 +14,10 @@ Send a JSON object with the following structure:
 
 ```json
 {
-  "firstname": "John",
-  "lastname": "Doe",
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
   "email": "john.doe@example.com",
   "phone": "1234567890",
   "password": "yourpassword"
@@ -23,8 +25,8 @@ Send a JSON object with the following structure:
 ```
 
 #### **Field Requirements**
-- `firstname`: String, required, minimum 3 characters
-- `lastname`: String, required, minimum 3 characters
+- `fullname.firstname`: String, required, minimum 3 characters
+- `fullname.lastname`: String, required, minimum 3 characters
 - `email`: String, required, valid email format, unique
 - `phone`: String, required, exactly 10 digits
 - `password`: String, required, minimum 6 characters
@@ -45,8 +47,7 @@ Send a JSON object with the following structure:
         "lastname": "Doe"
       },
       "email": "john.doe@example.com",
-      "phone": "1234567890",
-      "password": "<hashed_password>"
+      "phone": "1234567890"
     }
   }
   ```
@@ -59,7 +60,7 @@ Send a JSON object with the following structure:
     "errors": [
       {
         "msg": "First name must be at least 3 characters long",
-        "param": "firstname",
+        "param": "fullname.firstname",
         "location": "body"
       },
       ...
@@ -84,8 +85,10 @@ Send a JSON object with the following structure:
 curl -X POST http://localhost:4000/user/register \
   -H "Content-Type: application/json" \
   -d '{
-    "firstname": "John",
-    "lastname": "Doe",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
     "email": "john.doe@example.com",
     "phone": "1234567890",
     "password": "yourpassword"
@@ -94,6 +97,90 @@ curl -X POST http://localhost:4000/user/register \
 
 ---
 
+## User Login Endpoint
+
+### `POST /user/login`
+
+Authenticates a user and returns a JWT token.
+
+---
+
+### **Request Body**
+
+Send a JSON object with the following structure:
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "yourpassword"
+}
+```
+
+#### **Field Requirements**
+- `email`: String, required, valid email format
+- `password`: String, required, minimum 6 characters
+
+---
+
+### **Responses**
+
+#### **200 OK**
+- **Description:** Login successful.
+- **Body:**
+  ```json
+  {
+    "token": "<JWT Token>",
+    "user": {
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com",
+      "phone": "1234567890"
+    }
+  }
+  ```
+
+#### **400 Bad Request**
+- **Description:** Validation failed. One or more fields are missing or invalid.
+- **Body:**
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Invalid Email",
+        "param": "email",
+        "location": "body"
+      },
+      ...
+    ]
+  }
+  ```
+
+#### **401 Unauthorized**
+- **Description:** Invalid email or password.
+- **Body:**
+  ```json
+  {
+    "message": "Invalid email or password"
+  }
+  ```
+
+---
+
+### **Example cURL Request**
+
+```sh
+curl -X POST http://localhost:4000/user/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john.doe@example.com",
+    "password": "yourpassword"
+  }'
+```
+
+---
+
 **Note:**  
-- All fields are required.
-- The endpoint returns a JWT token upon successful registration.
+- Both fields are required.
+- The endpoint returns a JWT token upon successful login.
