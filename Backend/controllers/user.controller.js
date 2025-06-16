@@ -72,6 +72,7 @@ module.exports.logoutUser = async (req, res, next) => {
     await blacklistTokenModel.create({ token })
     // This will prevent the token from being used again in the future.
 
+    res.clearCookie('token')
 
     res.status(200).json({ message: 'Logged out successfully' })
 }
