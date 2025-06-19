@@ -40,3 +40,16 @@
 .read-the-docs {
   color: #888;
 }
+
+@font-face {
+  font-family: 'UberMove';
+  src: url('./assets/fonts/UberMoveMedium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'UberMove';
+  src: url('./assets/fonts/UberMoveBold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}

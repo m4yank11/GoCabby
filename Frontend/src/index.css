@@ -1,2 +1,18 @@
+@font-face {
+  font-family: 'UberMove';
+  src: url('./assets/fonts/UberMoveMedium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+/* @font-face {
+  font-family: 'UberMove';
+  src: url('./assets/fonts/UberMoveBold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+} */
+
 @import "tailwindcss";
 
+body {
+    font-family: 'UberMove', sans-serif;
+}
