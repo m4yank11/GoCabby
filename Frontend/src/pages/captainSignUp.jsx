@@ -2,18 +2,18 @@ import React, { useActionState, useState, useSyncExternalStore } from 'react'
 import logo2 from '../assets/logo2.png'
 import { Link } from 'react-router-dom'
 
-const captainSignUp = () => {
+const CaptainSignUp = () => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('') 
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
-    const [captainData, setCaptainData] = useState({})
+    const [CaptainData, setCaptainData] = useState({})
 
     const submitHandler = (e) => {
         e.preventDefault()
-        setUserData({
-            username: {
+        setCaptainData({
+            fullName: {
                 firstName:firstName,
                 lastName:lastName,
             },
@@ -21,7 +21,7 @@ const captainSignUp = () => {
             password:password
         })
 
-        console.log(captainData)
+        console.log(CaptainData)
         
         setEmail('')
         setFirstName('')
@@ -99,10 +99,10 @@ const captainSignUp = () => {
 
                 <button
                     className='bg-[#111] text-white mb-1 px-4 py-2 w-full rounded text-lg'>
-                    Sign In
+                    Create Account
                 </button>
 
-                <p className='text-center'>Already have an account? <Link to='/captainLogin' className='text-blue-600'>Login here</Link></p>
+                <p className='text-center'>Already have an account? <Link to='/CaptainLogin' className='text-blue-600'>Login here</Link></p>
             </form>
         </div>
 
@@ -114,4 +114,4 @@ const captainSignUp = () => {
     )
 }
 
-export default captainSignUp
+export default CaptainSignUp

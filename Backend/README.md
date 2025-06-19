@@ -2,9 +2,9 @@
 
 ## User Registration Endpoint
 
-### `POST /user/register`
+### `POST /User/register`
 
-Registers a new user in the system.
+Registers a new User in the system.
 
 ---
 
@@ -14,9 +14,9 @@ Send a JSON object with the following structure:
 
 ```json
 {
-  "fullname": {
-    "firstname": "John",
-    "lastname": "Doe"
+  "fullName": {
+    "firstName": "John",
+    "lastName": "Doe"
   },
   "email": "john.doe@example.com",
   "phone": "1234567890",
@@ -25,8 +25,8 @@ Send a JSON object with the following structure:
 ```
 
 #### **Field Requirements**
-- `fullname.firstname`: String, required, minimum 3 characters
-- `fullname.lastname`: String, required, minimum 3 characters
+- `fullName.firstName`: String, required, minimum 3 characters
+- `fullName.lastName`: String, required, minimum 3 characters
 - `email`: String, required, valid email format, unique
 - `phone`: String, required, exactly 10 digits
 - `password`: String, required, minimum 6 characters
@@ -41,10 +41,10 @@ Send a JSON object with the following structure:
   ```json
   {
     "token": "<JWT Token>",
-    "user": {
-      "fullname": {
-        "firstname": "John",
-        "lastname": "Doe"
+    "User": {
+      "fullName": {
+        "firstName": "John",
+        "lastName": "Doe"
       },
       "email": "john.doe@example.com",
       "phone": "1234567890"
@@ -60,7 +60,7 @@ Send a JSON object with the following structure:
     "errors": [
       {
         "msg": "First name must be at least 3 characters long",
-        "param": "fullname.firstname",
+        "param": "fullName.firstName",
         "location": "body"
       },
       ...
@@ -73,7 +73,7 @@ Send a JSON object with the following structure:
 - **Body:**
   ```json
   {
-    "error": "Error creating user: <error message>"
+    "error": "Error creating User: <error message>"
   }
   ```
 
@@ -82,12 +82,12 @@ Send a JSON object with the following structure:
 ### **Example cURL Request**
 
 ```sh
-curl -X POST http://localhost:4000/user/register \
+curl -X POST http://localhost:4000/User/register \
   -H "Content-Type: application/json" \
   -d '{
-    "fullname": {
-      "firstname": "John",
-      "lastname": "Doe"
+    "fullName": {
+      "firstName": "John",
+      "lastName": "Doe"
     },
     "email": "john.doe@example.com",
     "phone": "1234567890",
@@ -99,9 +99,9 @@ curl -X POST http://localhost:4000/user/register \
 
 ## User Login Endpoint
 
-### `POST /user/login`
+### `POST /User/login`
 
-Authenticates a user and returns a JWT token.
+Authenticates a User and returns a JWT token.
 
 ---
 
@@ -130,10 +130,10 @@ Send a JSON object with the following structure:
   ```json
   {
     "token": "<JWT Token>",
-    "user": {
-      "fullname": {
-        "firstname": "John",
-        "lastname": "Doe"
+    "User": {
+      "fullName": {
+        "firstName": "John",
+        "lastName": "Doe"
       },
       "email": "john.doe@example.com",
       "phone": "1234567890"
@@ -171,7 +171,7 @@ Send a JSON object with the following structure:
 ### **Example cURL Request**
 
 ```sh
-curl -X POST http://localhost:4000/user/login \
+curl -X POST http://localhost:4000/User/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "john.doe@example.com",
@@ -189,9 +189,9 @@ curl -X POST http://localhost:4000/user/login \
 
 ## User Profile Endpoint
 
-### `GET /user/profile`
+### `GET /User/profile`
 
-Returns the profile of the authenticated user.
+Returns the profile of the authenticated User.
 
 ---
 
@@ -208,18 +208,18 @@ or
 ### **Responses**
 
 #### **200 OK**
-- **Description:** Returns the authenticated user's profile.
+- **Description:** Returns the authenticated User's profile.
 - **Body:**
   ```json
   {
-    "_id": "user_id",
-    "fullname": {
-      "firstname": "John",
-      "lastname": "Doe"
+    "_id": "User_id",
+    "fullName": {
+      "firstName": "John",
+      "lastName": "Doe"
     },
     "email": "john.doe@example.com",
     "phone": "1234567890",
-    // ...other user fields
+    // ...other User fields
   }
   ```
 
@@ -237,7 +237,7 @@ or
 ### **Example cURL Request**
 
 ```sh
-curl -X GET http://localhost:4000/user/profile \
+curl -X GET http://localhost:4000/User/profile \
   -H "Authorization: Bearer <JWT Token>"
 ```
 
@@ -245,9 +245,9 @@ curl -X GET http://localhost:4000/user/profile \
 
 ## User Logout Endpoint
 
-### `POST /user/logout`
+### `POST /User/logout`
 
-Logs out the authenticated user by blacklisting their JWT token.
+Logs out the authenticated User by blacklisting their JWT token.
 
 ---
 
@@ -286,7 +286,7 @@ or
 ### **Example cURL Request**
 
 ```sh
-curl -X POST http://localhost:4000/user/logout \
+curl -X POST http://localhost:4000/User/logout \
   -H "Authorization: Bearer <JWT Token>"
 ```
 
@@ -294,9 +294,9 @@ curl -X POST http://localhost:4000/user/logout \
 
 ## Captain Registration Endpoint
 
-### `POST /captain/register`
+### `POST /Captain/register`
 
-Registers a new captain (driver) in the system.
+Registers a new Captain (driver) in the system.
 
 ---
 
@@ -306,9 +306,9 @@ Send a JSON object with the following structure:
 
 ```json
 {
-  "fullname": {
-    "firstname": "Jane",
-    "lastname": "Doe"
+  "fullName": {
+    "firstName": "Jane",
+    "lastName": "Doe"
   },
   "email": "jane.doe@example.com",
   "phone": "9876543210",
@@ -322,8 +322,8 @@ Send a JSON object with the following structure:
 ```
 
 #### **Field Requirements**
-- `fullname.firstname`: String, required, minimum 3 characters
-- `fullname.lastname`: String, required, minimum 3 characters
+- `fullName.firstName`: String, required, minimum 3 characters
+- `fullName.lastName`: String, required, minimum 3 characters
 - `email`: String, required, valid email format, unique
 - `phone`: String, required, exactly 10 digits
 - `password`: String, required, minimum 6 characters
@@ -341,10 +341,10 @@ Send a JSON object with the following structure:
   ```json
   {
     "token": "<JWT Token>",
-    "captain": {
-      "fullname": {
-        "firstname": "Jane",
-        "lastname": "Doe"
+    "Captain": {
+      "fullName": {
+        "firstName": "Jane",
+        "lastName": "Doe"
       },
       "email": "jane.doe@example.com",
       "phone": "9876543210",
@@ -353,7 +353,7 @@ Send a JSON object with the following structure:
         "plate": "MH 47 CJ 0001",
         "type": "car"
       },
-      // ...other captain fields
+      // ...other Captain fields
     }
   }
   ```
@@ -366,7 +366,7 @@ Send a JSON object with the following structure:
     "errors": [
       {
         "msg": "First name must be at least 3 characters long",
-        "param": "fullname.firstname",
+        "param": "fullName.firstName",
         "location": "body"
       },
       ...
@@ -379,7 +379,7 @@ Send a JSON object with the following structure:
 - **Body:**
   ```json
   {
-    "error": "Error creating captain: <error message>"
+    "error": "Error creating Captain: <error message>"
   }
   ```
 
@@ -388,12 +388,12 @@ Send a JSON object with the following structure:
 ### **Example cURL Request**
 
 ```sh
-curl -X POST http://localhost:4000/captain/register \
+curl -X POST http://localhost:4000/Captain/register \
   -H "Content-Type: application/json" \
   -d '{
-    "fullname": {
-      "firstname": "Jane",
-      "lastname": "Doe"
+    "fullName": {
+      "firstName": "Jane",
+      "lastName": "Doe"
     },
     "email": "jane.doe@example.com",
     "phone": "9876543210",
@@ -410,9 +410,9 @@ curl -X POST http://localhost:4000/captain/register \
 
 ## Captain Login Endpoint
 
-### `POST /captain/login`
+### `POST /Captain/login`
 
-Authenticates a captain and returns a JWT token.
+Authenticates a Captain and returns a JWT token.
 
 ---
 
@@ -439,10 +439,10 @@ Authenticates a captain and returns a JWT token.
   ```json
   {
     "token": "<JWT Token>",
-    "captain": {
-      "fullname": {
-        "firstname": "Jane",
-        "lastname": "Doe"
+    "Captain": {
+      "fullName": {
+        "firstName": "Jane",
+        "lastName": "Doe"
       },
       "email": "jane.doe@example.com",
       "phone": "9876543210",
@@ -451,7 +451,7 @@ Authenticates a captain and returns a JWT token.
         "plate": "MH 47 CJ 0001",
         "type": "car"
       }
-      // ...other captain fields
+      // ...other Captain fields
     }
   }
   ```
@@ -486,7 +486,7 @@ Authenticates a captain and returns a JWT token.
 ### **Example cURL Request**
 
 ```sh
-curl -X POST http://localhost:4000/captain/login \
+curl -X POST http://localhost:4000/Captain/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "jane.doe@example.com",
@@ -498,9 +498,9 @@ curl -X POST http://localhost:4000/captain/login \
 
 ## Captain Profile Endpoint
 
-### `GET /captain/profile`
+### `GET /Captain/profile`
 
-Returns the profile of the authenticated captain.
+Returns the profile of the authenticated Captain.
 
 ---
 
@@ -517,14 +517,14 @@ or
 ### **Responses**
 
 #### **200 OK**
-- **Description:** Returns the authenticated captain's profile.
+- **Description:** Returns the authenticated Captain's profile.
 - **Body:**
   ```json
   {
-    "_id": "captain_id",
-    "fullname": {
-      "firstname": "Jane",
-      "lastname": "Doe"
+    "_id": "Captain_id",
+    "fullName": {
+      "firstName": "Jane",
+      "lastName": "Doe"
     },
     "email": "jane.doe@example.com",
     "phone": "9876543210",
@@ -533,7 +533,7 @@ or
       "plate": "MH 47 CJ 0001",
       "type": "car"
     }
-    // ...other captain fields
+    // ...other Captain fields
   }
   ```
 
@@ -551,7 +551,7 @@ or
 ### **Example cURL Request**
 
 ```sh
-curl -X GET http://localhost:4000/captain/profile \
+curl -X GET http://localhost:4000/Captain/profile \
   -H "Authorization: Bearer <JWT Token>"
 ```
 
@@ -559,9 +559,9 @@ curl -X GET http://localhost:4000/captain/profile \
 
 ## Captain Logout Endpoint
 
-### `GET /captain/logout`
+### `GET /Captain/logout`
 
-Logs out the authenticated captain by blacklisting their JWT token.
+Logs out the authenticated Captain by blacklisting their JWT token.
 
 ---
 
@@ -600,6 +600,6 @@ or
 ### **Example cURL Request**
 
 ```sh
-curl -X GET http://localhost:4000/captain/logout \
+curl -X GET http://localhost:4000/Captain/logout \
   -H "Authorization: Bearer <JWT Token>"
 ```

@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import logo2 from '../assets/logo2.png'
 import { Link } from 'react-router-dom'
 
-const userLogin = () => {
+const UserLogin = () => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('') 
-    const [userData, setUserData] = useState({})
+    const [UserData, setUserData] = useState({})
 
     const submitHandler = (e) => {
         e.preventDefault()
@@ -14,7 +14,7 @@ const userLogin = () => {
             email:email,
             password:password
         })
-        console.log(userData)
+        console.log(UserData)
         setEmail('')
         setPassword('')
         
@@ -64,13 +64,13 @@ const userLogin = () => {
                 Login
             </button>
 
-            <p className='text-center'>New here? <Link to='/userSignUp' className='text-blue-600'>Create new account</Link></p>
+            <p className='text-center'>New here? <Link to='/UserSignUp' className='text-blue-600'>Create new account</Link></p>
             </form>
         </div>
 
         {/* Footer with Captain Button */}
         <div>
-            <Link to={'/captainLogin'}
+            <Link to={'/CaptainLogin'}
             className='bg-[#5B8155] flex flex-center justify-center text-white px-4 py-2 w-full rounded text-lg'>
             Sign in as Captain
             </Link>
@@ -79,4 +79,4 @@ const userLogin = () => {
     )
 }
 
-export default userLogin
+export default UserLogin

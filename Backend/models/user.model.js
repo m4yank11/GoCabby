@@ -4,14 +4,14 @@ const jwt = require('jsonwebtoken')
 
 
 
-const userSchema = new mongoose.Schema({
-    fullname: {
-        firstname: {
+const UserSchema = new mongoose.Schema({
+    fullName: {
+        firstName: {
             type: String,
             required: true,
             minlength: [3, "First name must be atleast 3 characters long"]
         },
-        lastname: {
+        lastName: {
             type: String,
             required: true,
             minlength: [3, "Last name must be atleast 3 characters long"]
@@ -23,14 +23,9 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
         lowercase: true,
-        validate: [ / ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Please fill a valid email address' ],
+        validate: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Please fill a valid email address' ],
         minlength: [5, "E-mail must be atleast 5 characters long"]
         },
-    phone: {
-        type: String,
-        required: true,
-        length: [10, "Phone number must be of 10 digit"]
-    },
     password: {
         type: String,
         required: true,
@@ -43,14 +38,14 @@ const userSchema = new mongoose.Schema({
     
 })
 
-userSchema.methods.generateAuthToken = function () {
+UserSchema.methods.generateAuthToken = function () {
     const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
         expiresIn: '1h'
     })
     return token
 }
 
-userSchema.methods.comparePassword = async function (password) {
+UserSchema.methods.comparePassword = async function (password) {
     try {
         const isMatch = await bcrypt.compare(password, this.password)
         return isMatch
@@ -60,9 +55,9 @@ userSchema.methods.comparePassword = async function (password) {
 }
 
 
-userSchema.statics.hashPassword = async function (password) {
+UserSchema.statics.hashPassword = async function (password) {
     return await bcrypt.hash(password, 10)
 }
 
-const userModel = mongoose.model('User', userSchema)
-module.exports = userModel
+const UserModel = mongoose.model('User', UserSchema)
+module.exports = UserModel

@@ -3,11 +3,11 @@ import logo from '../assets/gocabby-logo.png'
 import logo2 from '../assets/logo2.png'
 import { Link } from 'react-router-dom'
 
-const captainLogin = () => {
+const CaptainLogin = () => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('') 
-    const [captainData, setCaptainData] = useState({})
+    const [CaptainData, setCaptainData] = useState({})
 
     const submitHandler = (e) => {
         e.preventDefault()
@@ -15,7 +15,7 @@ const captainLogin = () => {
             email:email,
             password:password
         })
-        console.log(captainData)
+        console.log(CaptainData)
         setEmail('')
         setPassword('')
         
@@ -65,13 +65,13 @@ const captainLogin = () => {
                 Login
             </button>
 
-            <p className='text-center'>Join a fleet? <Link to='/captainSignUp' className='text-blue-600'>Register as a Captain</Link></p>
+            <p className='text-center'>Join a fleet? <Link to='/CaptainSignUp' className='text-blue-600'>Register as a Captain</Link></p>
             </form>
         </div>
 
         {/* Footer with User Button */}
         <div>
-            <Link to={'/userLogin'}
+            <Link to={'/UserLogin'}
             className='bg-[#CE732B] flex flex-center justify-center text-white px-4 py-2 w-full rounded text-lg'>
             Sign in as User
             </Link>
@@ -80,4 +80,4 @@ const captainLogin = () => {
     )
 }
 
-export default captainLogin 
+export default CaptainLogin 

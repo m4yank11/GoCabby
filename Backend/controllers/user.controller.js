@@ -1,6 +1,6 @@
 const blacklistTokenModel = require('../models/blacklistToken.model')
-const userModel = require('../models/user.model')
-const userService = require('../services/user.service')
+const UserModel = require('../models/User.model')
+const UserService = require('../services/User.service')
 const { validationResult } = require('express-validator')
 
 module.exports.registerUser = async (req, res, next) => {
@@ -10,28 +10,27 @@ module.exports.registerUser = async (req, res, next) => {
     }
 
     console.log(req.body)
-    const { fullname, email, phone, password } = req.body
+    const { fullName, email, password } = req.body
 
-    const ifUserAlreadyExists = await userModel.findOne({ email })
+    const ifUserAlreadyExists = await UserModel.findOne({ email })
         if(ifUserAlreadyExists){
             return res.status(400).json({ message: 'User with this email already exists'})
         }
 
     
-    const hashedPassword = await userModel.hashPassword(password)
+    const hashedPassword = await UserModel.hashPassword(password)
 
-    const user = await userService.createUser({
-        firstname: fullname.firstname,
-        lastname: fullname.lastname,
+    const User = await UserService.createUser({
+        firstName: fullName.firstName,
+        lastName: fullName.lastName,
         email,
-        phone,
         password: hashedPassword
     })
 
 
-    const token = user.generateAuthToken()
+    const token = User.generateAuthToken()
     
-    res.status(201).json({token, user})
+    res.status(201).json({token, User})
 }
 
 module.exports.loginUser = async (req, res, next) => {
@@ -42,25 +41,25 @@ module.exports.loginUser = async (req, res, next) => {
 
     const { email, password } = req.body
 
-    const user = await userModel.findOne( {email} ).select('+password')
-    if(!user){
+    const User = await UserModel.findOne( {email} ).select('+password')
+    if(!User){
         res.status(401).json({ message: 'Invalid email or password' })
     }
 
-    const isMatch = await user.comparePassword(password)
+    const isMatch = await User.comparePassword(password)
     if(!isMatch){
         res.status(401).json({ message: 'Invalid email or password' })
     }
 
-    const token = user.generateAuthToken()
+    const token = User.generateAuthToken()
     res.cookie('token', token)
 
-    res.status(200).json({token, user})
+    res.status(200).json({token, User})
 
 }
 
 module.exports.getUserProfile = async(req, res, next) => {
-    res.status(200).json(req.user)
+    res.status(200).json(req.User)
 }
 
 module.exports.logoutUser = async (req, res, next) => {

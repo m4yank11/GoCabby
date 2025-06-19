@@ -1,8 +1,8 @@
-const userModel = require('../models/user.model')
+const UserModel = require('../models/User.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const blacklistTokenModel = require('../models/blacklistToken.model')
-const captainModel = require('../models/captain.model')
+const CaptainModel = require('../models/Captain.model')
 
 module.exports.authUser = async (req, res, next) => {
     
@@ -23,11 +23,11 @@ module.exports.authUser = async (req, res, next) => {
     try{
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
-        const user = await userModel.findById(decoded._id)
-        if (!user) {
+        const User = await UserModel.findById(decoded._id)
+        if (!User) {
             return res.status(401).json({ message: 'Unauthorized access' })
         }
-        req.user = user
+        req.User = User
         next()
     }
     catch(err){
@@ -47,11 +47,11 @@ module.exports.authCaptain = async (req, res, next)=> {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
-        const captain = await captainModel.findById(decoded._id)
-        if (!captain) {
+        const Captain = await CaptainModel.findById(decoded._id)
+        if (!Captain) {
             return res.status(401).json({ message: 'Unauthorized access' })
         }
-        req.captain = captain
+        req.Captain = Captain
         next()
     } catch (err) {
         return res.status(401).json({ message: 'Unauthorized access' })

@@ -1,27 +1,44 @@
-import React, { useActionState, useState, useSyncExternalStore } from 'react'
+import React, {useState} from 'react'
 import logo2 from '../assets/logo2.png'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import {UserDataContext} from '../context/userContext'
 
-const userSignUp = () => {
+const UserSignUp = () => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('') 
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
-    const [userData, setUserData] = useState({})
+    //const [UserData, setUserData] = useState({})
 
-    const submitHandler = (e) => {
+    const navigate = useNavigate()
+    const [user, setUser] = React.useContext(UserDataContext) 
+
+    const submitHandler = async (e) => {
         e.preventDefault()
-        setUserData({
-            username: {
+
+        const newUser = {
+            fullName: {
                 firstName:firstName,
                 lastName:lastName,
             },
             email:email,
             password:password
-        })
+        }
 
-        console.log(userData)
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/user/register`, newUser)
+
+            if (response.status === 201) {
+                const data = response.data
+                setUser(data.user)
+                navigate('./Home')
+            }
+
+            } catch (error) {
+            console.error("❌ Registration failed:", error.response?.data || error.message)
+        }
         
         setEmail('')
         setFirstName('')
@@ -99,10 +116,10 @@ const userSignUp = () => {
 
                 <button
                     className='bg-[#111] text-white mb-1 px-4 py-2 w-full rounded text-lg'>
-                    Sign In
+                    Create Account
                 </button>
 
-                <p className='text-center'>Already have an account? <Link to='/userLogin' className='text-blue-600'>Login here</Link></p>
+                <p className='text-center'>Already have an account? <Link to='/UserLogin' className='text-blue-600'>Login here</Link></p>
             </form>
         </div>
 
@@ -114,4 +131,4 @@ const userSignUp = () => {
     )
 }
 
-export default userSignUp
+export default UserSignUp
