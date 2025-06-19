@@ -1,5 +1,4 @@
 import React, { useActionState, useState, useSyncExternalStore } from 'react'
-import logo from '../assets/gocabby-logo.png'
 import logo2 from '../assets/logo2.png'
 import { Link } from 'react-router-dom'
 
@@ -32,7 +31,7 @@ const userSignUp = () => {
 
 
     return (
-        <div className='min-h-screen flex flex-col justify-between p-7'>
+        <div className='min-h-screen flex flex-col justify-between px-5 px-5'>
 
         {/* Header with Logo */}
         <div >
@@ -109,7 +108,7 @@ const userSignUp = () => {
 
         {/* Footer with Captain Button */}
         <div>
-            <p className='text-[10px] leading-tight'>By proceeding, you consent to get calls, WhatsApp or SMS messages, including by automated means by GoCabby to the number provided. </p>
+            <p className='text-[10px] leading-tight mb-3'>This site is protected by reCAPTCHA and <span className='underline'>Google Privacy Policy</span> and <span className='underline'>Terms of Services apply.</span> </p>
         </div>
         </div>
     )

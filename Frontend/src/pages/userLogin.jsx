@@ -1,5 +1,4 @@
-import React, { useActionState, useState } from 'react'
-import logo from '../assets/gocabby-logo.png'
+import React, { useState } from 'react'
 import logo2 from '../assets/logo2.png'
 import { Link } from 'react-router-dom'
 
@@ -35,7 +34,7 @@ const userLogin = () => {
             <form onSubmit={(e) => {
                 submitHandler(e)
             }}>
-            <h3 className='font-medium text-lg mb-2'>Enter your email?</h3>
+            <h3 className='font-medium text-lg mb-2'>Enter your email</h3>
             <input
                 required
                 value={email}
