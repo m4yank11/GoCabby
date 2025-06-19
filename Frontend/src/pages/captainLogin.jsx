@@ -35,7 +35,7 @@ const captainLogin = () => {
             <form onSubmit={(e) => {
                 submitHandler(e)
             }}>
-            <h3 className='font-medium text-lg mb-2'>Enter your email?</h3>
+            <h3 className='font-medium text-lg mb-2'>Enter your email</h3>
             <input
                 required
                 value={email}
