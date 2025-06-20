@@ -1,25 +1,47 @@
 import React, { useState } from 'react'
-import logo from '../assets/gocabby-logo.png'
 import logo2 from '../assets/logo2.png'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { CaptainDataContext } from '../context/CaptainContext'
 
 const CaptainLogin = () => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('') 
-    const [CaptainData, setCaptainData] = useState({})
 
-    const submitHandler = (e) => {
+    const navigate = useNavigate()
+    const [Captain, setCaptain] = React.useContext(CaptainDataContext)
+
+    const submitHandler = async (e) => {
         e.preventDefault()
-        setCaptainData({
-            email:email,
-            password:password
-        })
-        console.log(CaptainData)
+        
+        const CaptainData = {
+            email: email,
+            password: password
+        }
+
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captain/login`, CaptainData)
+
+            if (response.status === 200) {
+                const data = response.data
+                setCaptain(data.Captain)
+                localStorage.setItem('token', data.token)
+                navigate('/CaptainHome')
+            }
+
+            } catch (error) {
+            console.error("❌ Login failed:", error.response?.data || error.message)
+        }
+
         setEmail('')
         setPassword('')
+            
+        
         
     }
+
+
 
 
     return (

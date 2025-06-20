@@ -23,11 +23,6 @@ const CaptainSchema = new mongoose.Schema({
         lowercase: true,
         validate: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Please fill a valid email address' ],
     },
-    phone: {
-        type: String,
-        required: true,
-        length: [10, "Phone number must be of 10 digit"]
-    },
     password: {
         type: String,
         required: true,

@@ -7,7 +7,7 @@ const cors = require('cors')
 const connectToDb = require('./db/db')
 const UserRoute = require('./routes/User.route')
 const cookieParser = require('cookie-parser')
-const CaptainRoute = require('./routes/Captain.route')
+const CaptainRoute = require('./routes/captain.route')
 
 connectToDb()
 

@@ -5,7 +5,12 @@ import UserSignUp from './pages/UserSignUp.jsx'
 import UserLogin from './pages/UserLogin.jsx'
 import CaptainSignUp from './pages/CaptainSignUp.jsx'
 import CaptainLogin from './pages/CaptainLogin.jsx'
-import Home from './pages/Home.jsx'
+import UserHome from './pages/UserHome.jsx'
+import UserProtectedWrapper from './pages/UserProtectedWrapper.jsx'
+import CaptainProtectedWrapper from './pages/CaptainProtectedWrapper.jsx'
+import UserLogout from './pages/UserLogout.jsx'
+import CaptainHome from './pages/CaptainHome.jsx'
+import CaptainLogout from './pages/CaptainLogout.jsx'
 
 const App = () => {
   return (
@@ -16,7 +21,34 @@ const App = () => {
         <Route path = '/UserLogin' element= {<UserLogin/>}/>
         <Route path = '/CaptainSignUp' element= {<CaptainSignUp/>}/>
         <Route path = '/CaptainLogin' element= {<CaptainLogin/>}/> 
-        <Route path = '/Home' element = {<Home/>}/>
+
+
+        <Route path = '/UserHome' element = {
+          <UserProtectedWrapper>
+            <UserHome/>
+          </UserProtectedWrapper>}
+        />
+
+        <Route path = '/User/Logout' element={<UserProtectedWrapper>
+          <UserLogout/>
+        </UserProtectedWrapper>}
+        />
+
+        <Route path = '/CaptainHome' element = {
+          <CaptainProtectedWrapper>
+            <CaptainHome/>
+          </CaptainProtectedWrapper>}
+        />
+
+        <Route path = '/Captain/Logout' element = {<CaptainProtectedWrapper>
+          <CaptainLogout/>      
+        </CaptainProtectedWrapper>}
+        />
+
+        
+
+
+
       </Routes>
       
     </div>

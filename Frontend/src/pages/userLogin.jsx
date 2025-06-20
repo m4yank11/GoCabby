@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import logo2 from '../assets/logo2.png'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import {UserDataContext} from '../context/userContext'
 
 const UserLogin = () => {
 
@@ -8,13 +10,31 @@ const UserLogin = () => {
     const [password, setPassword] = useState('') 
     const [UserData, setUserData] = useState({})
 
-    const submitHandler = (e) => {
+    const navigate = useNavigate()
+    const [user, setUser] = React.useContext(UserDataContext)
+
+    const submitHandler = async (e) => {
         e.preventDefault()
-        setUserData({
-            email:email,
-            password:password
-        })
-        console.log(UserData)
+        
+        const userData = {
+            email: email,
+            password: password
+        }
+
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/user/login`, userData)
+
+            if (response.status === 200) {
+                const data = response.data
+                setUser(data.user)
+                localStorage.setItem('token', data.token)
+                navigate('/UserHome')
+            }
+
+            } catch (error) {
+            console.error("❌ Login failed:", error.response?.data || error.message)
+        }
+
         setEmail('')
         setPassword('')
         

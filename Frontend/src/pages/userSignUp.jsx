@@ -10,7 +10,6 @@ const UserSignUp = () => {
     const [password, setPassword] = useState('') 
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
-    //const [UserData, setUserData] = useState({})
 
     const navigate = useNavigate()
     const [user, setUser] = React.useContext(UserDataContext) 
@@ -33,7 +32,9 @@ const UserSignUp = () => {
             if (response.status === 201) {
                 const data = response.data
                 setUser(data.user)
-                navigate('./Home')
+                localStorage.setItem('token', data.token)
+                 
+                navigate('/UserHome')
             }
 
             } catch (error) {
