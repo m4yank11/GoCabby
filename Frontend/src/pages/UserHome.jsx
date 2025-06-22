@@ -5,16 +5,23 @@ import gsap from 'gsap'
 import 'remixicon/fonts/remixicon.css'
 import LocationSearchPanel from '../components/LocationSearchPanel'
 import VehiclePanel from '../components/VehiclePanel'
+import ConfirmRide from '../components/ConfirmRide'
+import LookingForDriver from '../components/LookingForDriver'
+
 
 const UserHome = () => {
   const [pickup, setPickup] = useState('')
   const [destination, setDestination] = useState('')
   const [openPanel, setOpenPanel] = useState(false)
   const [vehiclePanel, setVehiclePanel] = useState(false)
+  const [confirmRidePanel, setConfirmRidePanel] = useState(false)
+  const [vehicleFound, setVehicleFound] = useState(false)
 
   const panelRef = useRef(null)
   const panelCloseRef = useRef(null)
   const vehiclePanelRef = useRef(null) 
+  const confirmRidePanelRef = useRef(null)
+  const vehicleFoundRef = useRef(null)
 
   const submitHandler = (e) => {
     e.preventDefault()
@@ -55,6 +62,34 @@ const UserHome = () => {
       })
     }
   }, [vehiclePanel])
+
+  // Animate Confirm Ride Panel
+
+  useGSAP(() => {
+    if (confirmRidePanel) {
+      gsap.to(confirmRidePanelRef.current, {
+        y: '0%'
+      })
+    } else {
+      gsap.to(confirmRidePanelRef.current, {
+        y: '100%'
+      })
+    }
+  }, [confirmRidePanel])
+
+  //Animate Vehicle Found panel
+
+  useGSAP(() => {
+    if (vehicleFound) {
+      gsap.to(vehicleFoundRef.current, {
+        y: '0%'
+      })
+    } else {
+      gsap.to(vehicleFoundRef.current, {
+        y: '100%'
+      })
+    }
+  }, [vehicleFound])
 
   return (
     <div className='relative h-screen overflow-hidden'>
@@ -120,7 +155,23 @@ const UserHome = () => {
         className='fixed w-full bottom-0 translate-y-full bg-white px-3 py-10 pt-12 z-20'
         style={{ transform: 'translateY(100%)' }}
       >
-        <VehiclePanel setVehiclePanel={setVehiclePanel}/>
+        <VehiclePanel setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel}/>
+      </div>
+
+      {/* confirm ride panel */}
+      <div
+        ref={confirmRidePanelRef}
+        className='fixed w-full bottom-0 translate-y-full bg-white px-3 py-6 pt-12 z-20'
+        style={{ transform: 'translateY(100%)' }}
+      >
+        <ConfirmRide setConfirmRidePanel={setConfirmRidePanel} setVehicleFound={setVehicleFound}/>
+      </div>
+      <div
+        ref={vehicleFoundRef}
+        className='fixed w-full bottom-0 translate-y-full bg-white px-3 py-6 pt-12 z-20'
+        style={{ transform: 'translateY(100%)' }}
+      >
+        <LookingForDriver/>
       </div>
     </div>
   )
