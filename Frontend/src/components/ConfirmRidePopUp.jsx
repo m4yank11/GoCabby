@@ -1,26 +1,28 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
-const WaitingForDriver = (props) => {
+const ConfirmRidePopUp = (props) => {
   return (
-    <div>
-        {/* arrow wala icon */}
+    <div className='h-screen'>
+      {/* arrow wala icon */}
             <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
-                props.setWaitingForDriver(false)
+                props.setRidePopUpPanel(false)
             }}><i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
             </h5>
+            <h3 className='text-2xl font-semibold mb-2'>Confirm this Ride to Start</h3>
 
-            <div className='flex items-center justify-between'>
-                <img className='h-14' src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg" alt="" />
-                <div className='text-right'>
-                    <h2 className='text-lg font-medium'>Abhijeet</h2>
-                    <h4 className='text-xl font-semibold -mt-1'>MH 19 CJ 5678</h4>
-                    <p className='text-sm text-gray-600 -mt-1'>Maruti Sukuzi Desire LXI</p>
+            <div className='flex items-center justify-between mt-4 rounded-lg p-3 bg-yellow-300'>
+                <div className='flex items-center justify-start gap-3'>
+                    <img className="h-10 w-10 rounded-full object-cover" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQD7c15mqbUC9Ube6XGhKYSsY9KC2v76CwEJA&s" alt="" />
+                    <h2 className='text-lg font-medium'>Prem Sharma</h2>
                 </div>
-                
+                <div>
+                    <h4 className='text-lg font-semibold'>2.2 Kms</h4>
+                </div>
+
             </div>
 
-      
-      <div className='flex flex-col gap-2 justify-between items-center'>
+            <div className='flex flex-col gap-2 justify-between items-center'>
 
                 <div className='w-full mt-5'>
                     <div className='flex items-center gap-4 p-3 border-b-2 border-gray-300'>
@@ -48,9 +50,18 @@ const WaitingForDriver = (props) => {
                     </div>
 
                 </div>
+                <div className='flex w-screen p-3 gap-3'>
+                    <button  onClick={() => {
+                        props.setConfirmRidePopUpPanel(false)
+                        props.setRidePopUpPanel(false)
+                    }} className='w-full bg-red-600 text-white font-semibold p-2 rounded-lg'>Cancel</button>
+                    <Link to='/CaptainRiding' className='flex justify-center w-full bg-green-600 text-white font-semibold p-2 rounded-lg'>Confirm</Link>
+
+                </div>
             </div>
+
     </div>
   )
 }
 
-export default WaitingForDriver
+export default ConfirmRidePopUp
