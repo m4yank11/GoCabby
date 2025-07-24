@@ -147,8 +147,8 @@ const UserHome = () => {
             />
           </form>
           <button
-            onClick={() => setVehiclePanel(true)}
-            className="bg-black text-white px-4 py-2 rounded-lg mt-3 w-full"
+            onClick={() => {setVehiclePanel(true), setOpenPanel(false)}}
+            className="bg-black text-white px-4 py-2 rounded-lg mt-3 w-full active:scale-95"
           >
             Find Trip
           </button>

@@ -80,7 +80,7 @@ const UserLogin = () => {
             />
 
             <button
-                className='bg-[#111] text-white mb-1 px-4 py-2 w-full rounded text-lg'>
+                className='bg-[#111] text-white mb-1 px-4 py-2 w-full rounded text-lg active:scale-95'>
                 Login
             </button>
 
