@@ -2,52 +2,67 @@ const axios = require('axios')
 
 
 module.exports.getAddressCoordinates = async (address) => {
-    const apiKey = process.env.GOOGLE_MAPS_API;
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
-
     try {
-        const response = await axios.get(url);
-        if (response.data.status === 'OK') {
-            const location = response.data.results[ 0 ].geometry.location;
+        const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+            params: {
+                q: address,
+                format: 'json',
+                limit: 1
+            },
+            headers: {
+                'User-Agent': 'GoCabbyApp/1.0 (mayankrajgupta3112@gmail.com)' 
+            }
+        })
+        if (response.data && response.data.length > 0) {
+            const location = response.data[0]
             return {
-                ltd: location.lat,
-                lng: location.lng
-            };
+                lat: parseFloat(location.lat),
+                lng: parseFloat(location.lon)
+            }
         } else {
-            throw new Error('Unable to fetch coordinates');
+            throw new Error('No results found for the given address.')
         }
     } catch (error) {
-        console.error(error);
-        throw error;
+        throw new Error('Failed to fetch coordinates: ' + error.message)
     }
 }
 
-module.exports.getDistanceTime = async (origin, destination) => {
-    if(!origin || !destination){
+module.exports.getDistanceTime = async (pickup, destination) => {
+    if (!pickup || !destination) {
         throw new Error('Origin and destination are required')
     }
 
-    const apiKey = process.env.GOOGLE_MAPS_API
+    // Get coordinates for pickup and destination
+    const pickupCoords = await module.exports.getAddressCoordinates(pickup)
+    const destinationCoords = await module.exports.getAddressCoordinates(destination)
 
-    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(destination)}&key=${apiKey}`
-     try {
+    // OSRM expects lon,lat;lon,lat
+    const coordinates = `${pickupCoords.lng},${pickupCoords.lat};${destinationCoords.lng},${destinationCoords.lat}`
 
-
-        const response = await axios.get(url);
-        if (response.data.status === 'OK') {
-
-            if (response.data.rows[ 0 ].elements[ 0 ].status === 'ZERO_RESULTS') {
-                throw new Error('No routes found');
+    try {
+        const response = await axios.get(`https://router.project-osrm.org/route/v1/driving/${coordinates}`, {
+            params: {
+                overview: 'false'
             }
-
-            return response.data.rows[ 0 ].elements[ 0 ];
+        })
+        if (
+            response.data &&
+            response.data.code === 'Ok' &&
+            response.data.routes &&
+            response.data.routes.length > 0
+        ) {
+            const route = response.data.routes[0]
+            console.log("Raw Nominatim response for pickup:", pickup);
+            console.log("Raw Nominatim response for destination:", destination);
+            return {
+                distance: { value: route.distance }, // meters
+                duration: { value: route.duration }  // seconds
+            }
         } else {
-            throw new Error('Unable to fetch distance and time');
+            throw new Error('No route found')
         }
-
-    } catch (err) {
-        console.error(err);
-        throw err;
+    } catch (error) {
+        throw new Error('Failed to fetch distance and time: ' + error.message)
     }
 }
 
@@ -55,19 +70,20 @@ module.exports.getAutoCompleteSuggestions = async (input) => {
     if (!input) {
         throw new Error('query is required');
     }
-
-    const apiKey = process.env.GOOGLE_MAPS_API;
-    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&key=${apiKey}`;
-
     try {
-        const response = await axios.get(url);
-        if (response.data.status === 'OK') {
-            return response.data.predictions.map(prediction => prediction.description).filter(value => value);
-        } else {
-            throw new Error('Unable to fetch suggestions');
-        }
+        const response = await axios.get('https://nominatim.openstreetmap.org/search', {
+            params: {
+                q: input,
+                format: 'json',
+                addressdetails: 1,
+                limit: 5
+            },
+            headers: {
+                'User-Agent': 'GoCabbyApp/1.0 (mayankrajgupta3112@gmail.com)'
+            }
+        })
+        return response.data.map(item => item.display_name)
     } catch (err) {
-        console.error(err);
-        throw err;
+        throw new Error('Unable to fetch suggestions: ' + err.message)
     }
 }

@@ -3,7 +3,7 @@ const {validationResult} = require('express-validator')
 
 module.exports.getCoordinates = async (req, res, next) => {
     const errors = validationResult(req)
-    if(!errors.empty()){
+    if(!errors.isEmpty()){
         return res.status(400).json({errors: errors.array()})
     }
     const {address} = req.query
@@ -26,9 +26,9 @@ module.exports.getDistanceTime = async (req, res, next) => {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { origin, destination } = req.query;
+        const { pickup, destination } = req.query;
 
-        const distanceTime = await mapsService.getDistanceTime(origin, destination);
+        const distanceTime = await mapsService.getDistanceTime(pickup, destination);
 
         res.status(200).json(distanceTime);
 

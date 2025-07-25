@@ -1,59 +1,78 @@
-const UserModel = require('../models/User.model')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const blacklistTokenModel = require('../models/blacklistToken.model')
-const CaptainModel = require('../models/Captain.model')
+const UserModel = require('../models/User.model');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const blacklistTokenModel = require('../models/blacklistToken.model');
+const CaptainModel = require('../models/Captain.model');
 
 module.exports.authUser = async (req, res, next) => {
     
-    // Check if the token is present in cookies or headers
-    const token = req.cookies.token || req.headers.authorization?.split(' ')[ 1 ]
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
 
     if(!token){
-        return res.status(401).json({ message: 'Unauthorized access' })
-    }
-
-    // Check if the token is blacklisted
-    const BlacklistToken = require('../models/blacklistToken.model')
-    const blacklistedToken = await BlacklistToken.findOne({ token })
-    if (blacklistedToken) {
-        return res.status(401).json({ message: 'Unauthorized access' })
-    }
-
-    try{
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
-        const User = await UserModel.findById(decoded._id)
-        if (!User) {
-            return res.status(401).json({ message: 'Unauthorized access' })
-        }
-        req.User = User
-        next()
-    }
-    catch(err){
-        return res.status(401).json({message: 'Unauthorized access'})
-    }
-}
-
-module.exports.authCaptain = async (req, res, next)=> {
-    const token = req.cookies.token || req.headers.authorization?.split(' ')[ 1 ]
-    if(!token){
-        return res.status(401).json({ message: 'Unauthorized access' })
-    }
-    const isBlacklisted = await blacklistTokenModel.findOne({ token })
-    if (isBlacklisted) {
-        return res.status(401).json({ message: 'Unauthorized access' })
+        return res.status(401).json({ message: 'Unauthorized: No token provided.' });
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
-        const Captain = await CaptainModel.findById(decoded._id)
-        if (!Captain) {
-            return res.status(401).json({ message: 'Unauthorized access' })
+        const blacklistedToken = await blacklistTokenModel.findOne({ token });
+        if (blacklistedToken) {
+            return res.status(401).json({ message: 'Unauthorized: Token is blacklisted.' });
         }
-        req.Captain = Captain
-        next()
-    } catch (err) {
-        return res.status(401).json({ message: 'Unauthorized access' })
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await UserModel.findById(decoded._id);
+        
+        if (!user) {
+            return res.status(401).json({ message: 'Unauthorized: User not found.' });
+        }
+
+        // --- THE BACKWARD-COMPATIBLE FIX ---
+        // We assign the user object to BOTH req.user (the correct convention)
+        // and req.User (to support your older code). This prevents anything
+        // from breaking while you update your codebase.
+        req.user = user; 
+        req.User = user; // For backward compatibility
+
+        next();
     }
-}
+    catch(err){
+        if (err.name === 'JsonWebTokenError') {
+            return res.status(401).json({message: 'Unauthorized: Invalid token.'});
+        }
+        console.error("Auth Middleware Error:", err);
+        return res.status(500).json({message: 'An internal error occurred during authentication.'});
+    }
+};
+
+module.exports.authCaptain = async (req, res, next)=> {
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+    
+    if(!token){
+        return res.status(401).json({ message: 'Unauthorized: No token provided.' });
+    }
+    
+    try {
+        const isBlacklisted = await blacklistTokenModel.findOne({ token });
+        if (isBlacklisted) {
+            return res.status(401).json({ message: 'Unauthorized: Token is blacklisted.' });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const captain = await CaptainModel.findById(decoded._id);
+        
+        if (!captain) {
+            return res.status(401).json({ message: 'Unauthorized: Captain not found.' });
+        }
+
+        // Applying the same backward-compatible fix for captains
+        req.captain = captain; 
+        req.Captain = captain; // For backward compatibility
+
+        next();
+    } catch (err) {
+        if (err.name === 'JsonWebTokenError') {
+            return res.status(401).json({message: 'Unauthorized: Invalid token.'});
+        }
+        console.error("Auth Captain Middleware Error:", err);
+        return res.status(500).json({ message: 'An internal error occurred during authentication.' });
+    }
+};

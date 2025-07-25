@@ -11,7 +11,7 @@ router.get('/get-coordinates',
     mapsController.getCoordinates)
 
 router.get('/get-distance-time',
-    query('origin').isString().isLength({ min: 3 }),
+    query('pickup').isString().isLength({ min: 3 }),
     query('destination').isString().isLength({ min: 3 }),
     authMiddleware.authUser,
     mapsController.getDistanceTime
