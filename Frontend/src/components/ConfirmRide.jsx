@@ -18,23 +18,23 @@ const ConfirmRide = (props) => {
                     <div className='flex items-center gap-4 p-3 border-b-2 border-gray-300'>
                         <i className="text-lg ri-map-pin-user-fill"></i>
                         <div>
-                           <h3 className='font-medium text-lg'>561/3-A</h3>
-                           <p className='text-base -mt-1 text-gray-600'>VR Trillium Mall, Nagpur</p>
+                           {/* <h3 className='font-medium text-lg'>561/3-A</h3> */}
+                           <p className='text-lg font-medium -mt-1 text-gray-800'>{ props.pickup }</p>
                         </div>
                     </div>
 
                     <div className='flex items-center gap-4 p-3 border-b-2 border-gray-300'>
                         <i className="text-lg ri-map-pin-2-fill"></i>
                         <div>
-                           <h3 className='font-medium text-lg'>561/3-A</h3>
-                           <p className='text-base -mt-1 text-gray-600'>Futala Lake, Nagpur</p>
+                           {/* <h3 className='font-medium text-lg'>561/3-A</h3> */}
+                           <p className='text-lg font-medium -mt-1 text-gray-800'>{ props.destination }</p>
                         </div>
                     </div>
                     
                     <div className='flex items-center gap-4 p-3'>
                         <i className="text-lg ri-money-rupee-circle-fill"></i>
                         <div>
-                           <h3 className='font-medium text-lg'>251.16</h3>
+                           <h3 className='font-medium text-lg'>₹{ props.fare[props.vehicleType] }</h3>
                            <p className='text-base -mt-1 text-gray-600'>Cash</p>
                         </div>
                     </div>
@@ -43,6 +43,7 @@ const ConfirmRide = (props) => {
                 <button onClick={() => {
                     props.setVehicleFound(true)
                     props.setConfirmRidePanel(false)
+                    props.createRide()
                 }} className='w-full bg-green-600 text-white font-semibold p-2 rounded-lg'>Confirm</button>
             </div>
 

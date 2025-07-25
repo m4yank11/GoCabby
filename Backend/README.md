@@ -711,3 +711,74 @@ curl -X POST http://localhost:4000/Ride/create \
     "message": "Authentication failed. Please log in again."
   }
   ```
+
+#### Get Fare for a Trip
+
+**Route:** `GET /Ride/get-fare`
+
+**Description:**  
+Calculates the estimated fare for a trip based on the pickup and destination addresses. The endpoint uses an external maps service to determine the distance and duration between the two locations, then computes the fare for different vehicle types (car, bike, auto).
+
+**Authentication:**  
+Required – include the user's JWT token in the `Authorization` header or as a cookie named `token`.
+
+**Query Parameters:**
+
+| Parameter   | Type   | Required | Description                         |
+|-------------|--------|----------|-------------------------------------|
+| pickup      | string | Yes      | The pickup location address.        |
+| destination | string | Yes      | The destination location address.   |
+
+**Example Request:**
+
+```sh
+curl -X GET "http://localhost:4000/Ride/get-fare?pickup=VR%20Trillium%20Mall,%20Nagpur&destination=Futala%20Lake,%20Nagpur" \
+  -H "Authorization: Bearer <JWT Token>"
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "fare": {
+    "car": 345,
+    "bike": 200,
+    "auto": 285
+  },
+  "distanceTime": {
+    "distance": { "value": 3500 },
+    "duration": { "value": 600 }
+  }
+}
+```
+
+**Error Responses:**
+
+- **400 Bad Request:**  
+  Returned if the query parameters are missing or invalid.
+  
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Invalid pickup address",
+        "param": "pickup",
+        "location": "query"
+      },
+      {
+        "msg": "Invalid destination address",
+        "param": "destination",
+        "location": "query"
+      }
+    ]
+  }
+  ```
+
+- **401 Unauthorized:**  
+  Returned if authentication fails.
+  
+  ```json
+  {
+    "message": "Unauthorized: Token is missing or invalid."
+  }
+  ```

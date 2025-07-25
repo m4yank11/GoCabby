@@ -8,6 +8,7 @@ import VehiclePanel from '../components/VehiclePanel'
 import ConfirmRide from '../components/ConfirmRide'
 import LookingForDriver from '../components/LookingForDriver'
 import WaitingForDriver from '../components/WaitingForDriver'
+import axios from 'axios'
 
 const UserHome = () => {
   const [pickup, setPickup] = useState('')
@@ -17,6 +18,14 @@ const UserHome = () => {
   const [confirmRidePanel, setConfirmRidePanel] = useState(false)
   const [vehicleFound, setVehicleFound] = useState(false)
   const [waitingForDriver, setWaitingForDriver] = useState(false)
+
+
+  // We need a state to track which input field is currently active.
+  const [activeField, setActiveField] = useState('pickup');
+
+  const [fare, setFare] = useState({});
+  const [vehicleType, setVehicleType] = useState(null)
+  const [ride, setRide] = useState(null)
 
   const panelRef = useRef(null)
   const panelCloseRef = useRef(null)
@@ -102,17 +111,57 @@ const UserHome = () => {
     }
   }, [waitingForDriver])
 
+async function findTripFare() {
+    if (!pickup || !destination) {
+      alert("Please enter both pickup and destination locations.");
+      return;
+    }
+    
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/Ride/get-fare`, { 
+        params: { pickup, destination },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      
+      console.log("Fare data received:", response.data);
+      setFare(response.data.fare); 
+      setVehiclePanel(true);
+      setOpenPanel(false);
+
+    } catch (error) {
+      console.error("Error fetching fare:", error);
+      alert("Could not fetch fare. Please check the locations and try again.");
+    }
+  }
+ 
+  async function createRide() {
+    const response = await axios.post(`${ import.meta.env.VITE_BARE_URL }/Ride/create-ride`, {
+      pickup,
+      destination,
+      vehicleType
+    }, {
+      headers: {
+        Authorization: `Bearer ${ localStorage.getItem('token') }`
+      }
+    })
+    console.log("Ride created:", response.data)
+
+  }
+
+
   return (
     <div className="relative h-screen overflow-hidden">
       {/* Logo */}
-      <img className="w-25 absolute left-3 top-2 z-10" src={logo2} alt="GoCabby logo" />
+      <img className="w-25 absolute left-3 top-2 z-10" src={logo2} alt="GoCabby logo" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/100x40/000000/FFFFFF?text=Logo'; }} />
 
       {/* Background */}
       <div className="h-screen w-screen">
         <img
           className="h-full w-full object-cover"
           src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-          alt=""
+          alt="Map background"
         />
       </div>
 
@@ -129,16 +178,20 @@ const UserHome = () => {
           <h4 className="text-2xl font-semibold">Find a trip</h4>
           <form className="relative py-3" onSubmit={submitHandler}>
             <div className="line absolute h-16 w-1 top-[50%] -translate-y-1/2 left-5 bg-gray-700 rounded-full"></div>
+
+            {/* Update the onClick to set the activeField state */}
             <input
-              onClick={() => setOpenPanel(true)}
+              onClick={() => { setOpenPanel(true); setActiveField('pickup'); }}
               value={pickup}
               onChange={(e) => setPickup(e.target.value)}
               className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full"
               type="text"
-              placeholder="Add a pick-up location"
+              placeholder="Enter your pick-up location"
             />
+
+            {/* Update the onClick to set the activeField state */}
             <input
-              onClick={() => setOpenPanel(true)}
+              onClick={() => { setOpenPanel(true); setActiveField('destination'); }}
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
               className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full mt-3"
@@ -147,7 +200,7 @@ const UserHome = () => {
             />
           </form>
           <button
-            onClick={() => {setVehiclePanel(true), setOpenPanel(false)}}
+            onClick={() => {findTripFare()}}
             className="bg-black text-white px-4 py-2 rounded-lg mt-3 w-full active:scale-95"
           >
             Find Trip
@@ -155,8 +208,15 @@ const UserHome = () => {
         </div>
 
         {/* Location Search Panel */}
-        <div ref={panelRef} className="bg-white h-0 overflow-hidden transition-all duration-300">
-          <LocationSearchPanel setOpenPanel={setOpenPanel} setVehiclePanel={setVehiclePanel} />
+        <div ref={panelRef} className="bg-white h-0 overflow-hidden transition-all">
+          {/* --- THE FIX (Part 4) --- */}
+          {/* Now 'activeField' is defined and this will work correctly */}
+          <LocationSearchPanel 
+            query={activeField === 'pickup' ? pickup : destination} 
+            setQuery={activeField === 'pickup' ? setPickup : setDestination} 
+            setOpenPanel={setOpenPanel}
+            setVehiclePanel={setVehiclePanel}
+          />
         </div>
       </div>
 
@@ -166,7 +226,12 @@ const UserHome = () => {
         className="fixed w-full bottom-0 translate-y-full bg-white px-3 py-10 pt-12 z-20"
         style={{ transform: 'translateY(100%)' }}
       >
-        <VehiclePanel setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel} />
+        <VehiclePanel 
+          selectVehicle = {setVehicleType}
+          fare={fare} 
+          setConfirmRidePanel={setConfirmRidePanel} 
+          setVehiclePanel={setVehiclePanel} 
+        />
       </div>
 
       {/* Confirm Ride Panel */}
@@ -175,7 +240,13 @@ const UserHome = () => {
         className="fixed w-full bottom-0 translate-y-full bg-white px-3 py-6 pt-12 z-20"
         style={{ transform: 'translateY(100%)' }}
       >
-        <ConfirmRide setConfirmRidePanel={setConfirmRidePanel} setVehicleFound={setVehicleFound} />
+        <ConfirmRide 
+          createRide={createRide}
+          pickup={pickup}
+          destination={destination}
+          fare={fare}
+          vehicleType={vehicleType}
+        setConfirmRidePanel={setConfirmRidePanel} setVehicleFound={setVehicleFound} />
       </div>
 
       {/* Vehicle Found Panel */}
@@ -184,7 +255,13 @@ const UserHome = () => {
         className="fixed w-full bottom-0 translate-y-full bg-white px-3 py-6 pt-12 z-20"
         style={{ transform: 'translateY(100%)' }}
       >
-        <LookingForDriver setVehicleFound={setVehicleFound} />
+        <LookingForDriver 
+          createRide={createRide}
+          pickup={pickup}
+          destination={destination}
+          fare={fare}
+          vehicleType={vehicleType}
+        setVehicleFound={setVehicleFound} />
       </div>
 
       {/* Waiting For Driver Panel */}
@@ -199,4 +276,4 @@ const UserHome = () => {
   )
 }
 
-export default UserHome
+export default UserHome;
