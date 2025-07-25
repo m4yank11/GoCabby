@@ -603,3 +603,111 @@ or
 curl -X GET http://localhost:4000/Captain/logout \
   -H "Authorization: Bearer <JWT Token>"
 ```
+
+---
+
+## Maps API Endpoints
+
+#### Get Distance and Time
+
+**Route:** `GET /Maps/getDistanceTime`
+
+**Description:** Calculates the estimated travel distance and time between two locations.
+
+| Parameter   | Type   | Required | Description                         |
+|-------------|--------|----------|-------------------------------------|
+| pickup      | string | Yes      | Pickup location address.            |
+| destination | string | Yes      | Destination location address.       |
+
+**Example Request:**
+
+```sh
+curl -X GET "http://localhost:4000/Maps/getDistanceTime?pickup=VR%20Trillium%20Mall,%20Nagpur&destination=Futala%20Lake,%20Nagpur"
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "distance": { "value": 3500 },
+  "duration": { "value": 600 }
+}
+```
+
+---
+
+### Ride API Endpoints
+
+#### Create a New Ride
+
+**Route:** `POST /Ride/create`
+
+**Description:** Allows an authenticated user to request a new ride.
+
+**Authentication:** Required – include the user's JWT in the `Authorization` header.
+
+| Parameter    | Type   | Required | Description                                                     |
+|--------------|--------|----------|-----------------------------------------------------------------|
+| pickup       | string | Yes      | Pickup location address.                                          |
+| destination  | string | Yes      | Destination location address.                                     |
+| vehicleType  | string | Yes      | Type of vehicle (must be one of: `car`, `bike`, or `auto`).         |
+
+**Example Request:**
+
+```sh
+curl -X POST http://localhost:4000/Ride/create \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <JWT Token>" \
+  -d '{
+    "pickup": "VR Trillium Mall, Nagpur",
+    "destination": "Futala Lake, Nagpur",
+    "vehicleType": "car"
+  }'
+```
+
+**Success Response (201 Created):**
+
+```json
+{
+  "_id": "60d0fe4f5311236168a109ca",
+  "user": "60d0fe4f5311236168a109c9",
+  "pickup": "VR Trillium Mall, Nagpur",
+  "destination": "Futala Lake, Nagpur",
+  "fare": 345,
+  "status": "pending",
+  "duration": 600,
+  "distance": 3500,
+  "otp": "1234",
+  "createdAt": "2025-07-25T12:34:56.789Z",
+  "updatedAt": "2025-07-25T12:34:56.789Z"
+}
+```
+
+**Error Response Examples:**
+
+- **400 Bad Request (Validation Error):**
+
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Invalid pickup address",
+        "param": "pickup",
+        "location": "body"
+      },
+      {
+        "msg": "Invalid destination address",
+        "param": "destination",
+        "location": "body"
+      }
+    ]
+  }
+  ```
+
+- **401 Unauthorized:**
+
+  ```json
+  {
+    "message": "Authentication failed. Please log in again."
+  }
+  ```
