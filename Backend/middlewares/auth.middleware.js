@@ -63,9 +63,7 @@ module.exports.authCaptain = async (req, res, next)=> {
             return res.status(401).json({ message: 'Unauthorized: Captain not found.' });
         }
 
-        // Applying the same backward-compatible fix for captains
-        req.captain = captain; 
-        req.Captain = captain; // For backward compatibility
+        req.captain = captain;
 
         next();
     } catch (err) {

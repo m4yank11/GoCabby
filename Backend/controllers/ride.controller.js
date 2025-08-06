@@ -12,7 +12,6 @@ module.exports.createRide = async (req, res) => {
         console.error("Authentication error: req.user is not defined. Check authMiddleware.");
         return res.status(401).json({ message: 'Authentication failed. Please log in again.' });
     }
-    // --- End of Check ---
 
 
     // We can now safely access req.user._id

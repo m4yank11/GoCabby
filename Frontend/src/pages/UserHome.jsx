@@ -136,18 +136,36 @@ async function findTripFare() {
     }
   }
  
+  // --- CORRECTED FUNCTION ---
+  // This function now correctly handles the API call and the UI state transitions.
   async function createRide() {
-    const response = await axios.post(`${ import.meta.env.VITE_BARE_URL }/Ride/create-ride`, {
-      pickup,
-      destination,
-      vehicleType
-    }, {
-      headers: {
-        Authorization: `Bearer ${ localStorage.getItem('token') }`
-      }
-    })
-    console.log("Ride created:", response.data)
+    if (!vehicleType) {
+      alert("Please select a vehicle type first.");
+      return;
+    }
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/Ride/create`, {
+        pickup,
+        destination,
+        vehicleType 
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
 
+      console.log("Ride created:", response.data);
+      setRide(response.data); // Save the created ride
+
+      // --- FIX: Manage UI flow after successful API call ---
+      // Only transition to the next panel after the ride is created.
+      setConfirmRidePanel(false);
+      setVehicleFound(true);
+
+    } catch (error) {
+      console.error("Error creating ride:", error);
+      alert("An error occurred while creating your ride. Please try again.");
+    }
   }
 
 
@@ -227,6 +245,7 @@ async function findTripFare() {
         style={{ transform: 'translateY(100%)' }}
       >
         <VehiclePanel 
+          //createRide={createRide}
           selectVehicle = {setVehicleType}
           fare={fare} 
           setConfirmRidePanel={setConfirmRidePanel} 

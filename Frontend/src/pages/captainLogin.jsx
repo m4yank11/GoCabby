@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import logo2 from '../assets/logo2.png'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -10,7 +10,7 @@ const CaptainLogin = () => {
     const [password, setPassword] = useState('') 
 
     const navigate = useNavigate()
-    const [Captain, setCaptain] = React.useContext(CaptainDataContext)
+    const {setCaptain} = useContext(CaptainDataContext)
 
     const submitHandler = async (e) => {
         e.preventDefault()
@@ -34,8 +34,8 @@ const CaptainLogin = () => {
             console.error("❌ Login failed:", error.response?.data || error.message)
         }
 
-        setEmail('')
-        setPassword('')
+        // setEmail('')
+        // setPassword('')
             
         
         

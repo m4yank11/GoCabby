@@ -12,9 +12,7 @@ async function getFare(pickup, destination) {
     if (
         !distanceTime ||
         !distanceTime.distance ||
-        !distanceTime.duration ||
-        typeof distanceTime.distance.value !== 'number' ||
-        typeof distanceTime.duration.value !== 'number'
+        !distanceTime.duration
     ) {
         console.error("Invalid response from mapsService.getDistanceTime:", distanceTime);
         throw new Error('Could not calculate distance and time. Please check if the addresses are valid.');
