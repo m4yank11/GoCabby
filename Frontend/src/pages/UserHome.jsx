@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect, useContext } from 'react'
 import logo2 from '../assets/logo2.png'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
@@ -9,6 +9,11 @@ import ConfirmRide from '../components/ConfirmRide'
 import LookingForDriver from '../components/LookingForDriver'
 import WaitingForDriver from '../components/WaitingForDriver'
 import axios from 'axios'
+import {SocketContext} from '../context/SocketContext.jsx'
+import { UserDataContext } from '../context/userContext.jsx'
+import { useNavigate } from 'react-router-dom'
+import { CaptainDataContext } from '../context/CaptainContext.jsx'
+
 
 const UserHome = () => {
   const [pickup, setPickup] = useState('')
@@ -33,6 +38,73 @@ const UserHome = () => {
   const confirmRidePanelRef = useRef(null)
   const vehicleFoundRef = useRef(null)
   const waitingForDriverRef = useRef(null)
+
+  const { socket, sendMessage, receiveMessage } = useContext(SocketContext)
+  // --- FIX 1: Correctly destructure the context object ---
+  const { user, setUser, setIsLoading } = useContext(UserDataContext);
+
+  const navigate = useNavigate()
+
+  // --- FIX 2: Add useEffect to fetch user profile data ---
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      setIsLoading(true);
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/UserLogin');
+          return;
+        }
+        // Assuming you have a '/User/profile' endpoint
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/User/profile`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setUser(response.data.user); // Update context with user data
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+        navigate('/UserLogin');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    // Only fetch if user data isn't already present
+    if (!user) {
+        fetchUserProfile();
+    } else {
+        setIsLoading(false);
+    }
+  }, []); // Empty array ensures this runs only once on mount
+
+  // --- FIX 3: Add a separate useEffect for socket logic ---
+  useEffect(() => {
+    // This guard clause prevents the code from running before user data is loaded
+    if (user && user._id && socket) {
+      console.log(`User ${user._id} joining socket room.`);
+      sendMessage("join", { userType: "user", userId: user._id });
+    }
+    // This effect runs whenever the user or socket connection changes
+  }, [user, socket, sendMessage]);
+
+
+  // --- NEW: useEffect to listen for ride acceptance ---
+  useEffect(() => {
+    if (socket && receiveMessage) {
+      receiveMessage('ride-accepted', (acceptedRide) => {
+        console.log("Ride has been accepted by a captain:", acceptedRide);
+        setRide(acceptedRide); // Update the ride state with captain details
+        setVehicleFound(false); // Hide the "Looking for driver" panel
+        setWaitingForDriver(true); // Show the "Waiting for driver" panel
+      });
+    }
+    return () => {
+      if (socket) {
+        socket.off('ride-accepted');
+      }
+    };
+  }, [socket, receiveMessage]);
+
+
 
   const submitHandler = (e) => {
     e.preventDefault()

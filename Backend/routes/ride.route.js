@@ -27,5 +27,12 @@ router.get('/get-fare',
     rideController.getFare
 )
 
+router.post('/accept',
+    authMiddleware.authCaptain, // Make sure a captain is logged in
+    body('rideId').isMongoId().withMessage('Invalid Ride ID'),
+    body('otp').isString().isLength({ min: 4, max: 4 }).withMessage('Invalid OTP'),
+    rideController.acceptRide
+);
+
 
 module.exports = router

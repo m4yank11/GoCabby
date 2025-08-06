@@ -782,3 +782,230 @@ curl -X GET "http://localhost:4000/Ride/get-fare?pickup=VR%20Trillium%20Mall,%20
     "message": "Unauthorized: Token is missing or invalid."
   }
   ```
+
+---
+
+### Captain API Endpoints
+
+#### POST /Captain/status
+
+**Description:**  
+Updates the captain's availability status.
+
+**Authentication:**  
+Captain JWT Required (send in `Authorization: Bearer <JWT Token>` header).
+
+| Parameter | Type   | Required | Description                       |
+|-----------|--------|----------|-----------------------------------|
+| status    | string | Yes      | Either `'active'` or `'inactive'` |
+
+**Example Request:**
+
+```json
+{
+  "status": "active"
+}
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "message": "Status updated successfully.",
+  "captain": {
+    "_id": "64a1b2c3d4e5f6a7b8c9d0e1",
+    "fullName": { "firstName": "Jane", "lastName": "Doe" },
+    "email": "jane.doe@example.com",
+    "status": "active",
+    "vehicle": { "type": "car", "color": "white", "plate": "MH 47 CJ 0001" }
+    // ...other captain fields
+  }
+}
+```
+
+---
+
+#### GET /Ride/get-fare
+
+**Description:**  
+Calculates the estimated fare for a trip.
+
+**Authentication:**  
+User JWT Required.
+
+| Parameter   | Type   | Required | Description                  |
+|-------------|--------|----------|------------------------------|
+| pickup      | string | Yes      | Pickup location address      |
+| destination | string | Yes      | Destination location address |
+
+**Example Request:**
+
+```sh
+curl -X GET "http://localhost:4000/Ride/get-fare?pickup=VR%20Trillium%20Mall,%20Nagpur&destination=Futala%20Lake,%20Nagpur" \
+  -H "Authorization: Bearer <JWT Token>"
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "fare": {
+    "car": 345,
+    "bike": 200,
+    "auto": 285
+  },
+  "distanceTime": {
+    "distance": { "value": 3500 },
+    "duration": { "value": 600 }
+  }
+}
+```
+
+---
+
+#### POST /Ride/accept
+
+**Description:**  
+Allows a captain to accept a ride request by verifying the OTP.
+
+**Authentication:**  
+Captain JWT Required.
+
+| Parameter | Type   | Required | Description                |
+|-----------|--------|----------|----------------------------|
+| rideId    | string | Yes      | Ride MongoDB ObjectId      |
+| otp       | string | Yes      | 4-digit OTP for the ride   |
+
+**Example Request:**
+
+```json
+{
+  "rideId": "64a1b2c3d4e5f6a7b8c9d0e1",
+  "otp": "1234"
+}
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "message": "Ride accepted successfully!",
+  "ride": {
+    "_id": "64a1b2c3d4e5f6a7b8c9d0e1",
+    "pickup": "VR Trillium Mall, Nagpur",
+    "destination": "Futala Lake, Nagpur",
+    "fare": 345,
+    "status": "accepted",
+    "user": {
+      "_id": "64a1b2c3d4e5f6a7b8c9d0e2",
+      "fullName": { "firstName": "John", "lastName": "Doe" },
+      "socketId": "abc123"
+    },
+    "captain": {
+      "_id": "64a1b2c3d4e5f6a7b8c9d0e3",
+      "fullName": { "firstName": "Jane", "lastName": "Doe" },
+      "vehicle": { "type": "car", "color": "white", "plate": "MH 47 CJ 0001" },
+      "socketId": "def456"
+    }
+    // ...other ride fields
+  }
+}
+```
+
+**Error Responses:**
+
+- **400 Bad Request (Invalid OTP):**
+
+  ```json
+  {
+    "message": "Invalid OTP."
+  }
+  ```
+
+- **404 Not Found (Ride not found):**
+
+  ```json
+  {
+    "message": "Ride not found."
+  }
+  ```
+
+---
+
+### Socket.IO Events
+
+#### emit('join')
+
+**Direction:** Client to Server
+
+**Description:**  
+Allows a user or captain to join their dedicated socket room to receive real-time updates.
+
+| Field   | Type     | Required | Description                       |
+|---------|----------|----------|-----------------------------------|
+| role    | string   | Yes      | `'user'` or `'captain'`           |
+| userId  | string   | Yes      | MongoDB ObjectId of the user/captain |
+
+**Example Payload:**
+
+```json
+{
+  "role": "captain",
+  "userId": "64a1b2c3d4e5f6a7b8c9d0e3"
+}
+```
+
+---
+
+#### on('new-ride-request')
+
+**Direction:** Server to Captain
+
+**Description:**  
+Notifies available captains about a new ride request.
+
+**Payload:**  
+The full ride object, populated with the user's details.
+
+```json
+{
+  "_id": "64a1b2c3d4e5f6a7b8c9d0e1",
+  "pickup": "VR Trillium Mall, Nagpur",
+  "destination": "Futala Lake, Nagpur",
+  "fare": 345,
+  "user": {
+    "_id": "64a1b2c3d4e5f6a7b8c9d0e2",
+    "fullName": { "firstName": "John", "lastName": "Doe" },
+    "email": "john.doe@example.com"
+  }
+  // ...other ride fields
+}
+```
+
+---
+
+#### on('ride-accepted')
+
+**Direction:** Server to User
+
+**Description:**  
+Notifies the user that a captain has accepted their ride.
+
+**Payload:**  
+The full ride object, populated with the captain's details.
+
+```json
+{
+  "_id": "64a1b2c3d4e5f6a7b8c9d0e1",
+  "pickup": "VR Trillium Mall, Nagpur",
+  "destination": "Futala Lake, Nagpur",
+  "fare": 345,
+  "status": "accepted",
+  "captain": {
+    "_id": "64a1b2c3d4e5f6a7b8c9d0e3",
+    "fullName": { "firstName": "Jane", "lastName": "Doe" },
+    "vehicle": { "type": "car", "color": "white", "plate": "MH 47 CJ 0001" }
+  }
+  // ...other ride fields
+}
+```

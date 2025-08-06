@@ -1,10 +1,13 @@
 const http = require('http')
 const app = require('./app')
+// Import and call initializeSocket with the created server
+const { initializeSocket } = require('./socket')
 const port = process.env.PORT || 4000
-
 
 const server = http.createServer(app)
 
-server.listen(port,() => {
+initializeSocket(server);
+
+server.listen(port, () => {
     console.log(`Server is running on Port: ${port}`)
 })

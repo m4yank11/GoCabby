@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import logo2 from '../assets/logo2.png'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -18,7 +18,10 @@ const CaptainSignUp = () => {
     const [vehicleType, setVehicleType] = useState('')
 
 
-    const [captain, setCaptain] = React.useContext(CaptainDataContext)
+    // --- THE FIX ---
+    // Destructure the context as an object using curly braces {}
+    // The signup page only needs the 'setCaptain' function.
+    const { setCaptain } = useContext(CaptainDataContext);
 
 
     const submitHandler = async (e) => {
