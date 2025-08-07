@@ -9,7 +9,7 @@ import ConfirmRidePopUp from '../components/ConfirmRidePopUp';
 import axios from 'axios';
 import { CaptainDataContext } from '../context/CaptainContext';
 import { SocketContext } from '../context/SocketContext';
-import { UserDataContext } from '../context/userContext';
+import { UserDataContext } from '../context/UserContext';
 
 
 const CaptainHome = () => {

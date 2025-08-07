@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 // --- FIX 1: Accept 'ride' as a prop ---
 const ConfirmRidePopUp = ({ ride, setConfirmRidePopUpPanel, setRidePopUpPanel }) => {
   const [Otp, setOtp] = useState('');
+
+  const navigate = useNavigate();
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -25,7 +27,6 @@ const ConfirmRidePopUp = ({ ride, setConfirmRidePopUpPanel, setRidePopUpPanel })
     }
 
     try {
-      // Call the new backend endpoint
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/Ride/accept`,
         {
@@ -41,12 +42,10 @@ const ConfirmRidePopUp = ({ ride, setConfirmRidePopUpPanel, setRidePopUpPanel })
 
       if (response.status === 200) {
         console.log("Ride accepted successfully!", response.data.ride);
-        // On success, navigate the captain to the riding page
         navigate('/CaptainRiding');
       }
     } catch (error) {
       console.error("Failed to accept ride:", error.response?.data?.message || error.message);
-      // Display the specific error message from the backend (e.g., "Invalid OTP")
       alert(error.response?.data?.message || "Failed to accept ride. Please try again.");
     }
   };
