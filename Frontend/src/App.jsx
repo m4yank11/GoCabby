@@ -49,12 +49,6 @@ const App = () => {
         </CaptainProtectedWrapper>}
         />
 
- 
-
-        
-
-
-
       </Routes>
       
     </div>

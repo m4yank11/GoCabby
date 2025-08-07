@@ -105,7 +105,7 @@ useEffect(() => {
       </div>
 
 
-      <div className='flex-grow h-full'>
+      <div className='h-3/5 relative'>
         <img
           className="h-full w-full object-cover"
           src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"

@@ -3,6 +3,9 @@ const { validationResult } = require('express-validator');
 const CaptainModel = require('../models/Captain.model');
 const { sendMessageToSocketId } = require('../socket');
 const RideModel = require('../models/ride.model'); // Import the RideModel
+const { sendMessageToUser } = require('../socket');
+const { broadcastToCaptains } = require('../socket')
+
 
 module.exports.createRide = async (req, res) => {
     const errors = validationResult(req);
@@ -28,22 +31,10 @@ module.exports.createRide = async (req, res) => {
             select: 'fullName email' // Specify which user fields you need
         });
         
-        // 3. Find available captains.
-        const availableCaptains = await CaptainModel.find({ status: 'active' });
+        // ✨ THE FIX: Replace the database lookup and loop with a single broadcast
+        broadcastToCaptains('new-ride-request', populatedRide);
+        console.log(`Ride request ${populatedRide._id} broadcasted to all available captains.`);
 
-        // 4. Loop through and send the 'populatedRide' object, which now contains the user's name.
-        availableCaptains.forEach(captain => {
-            if (captain.socketId) {
-                console.log(`Sending ride request for ride ${populatedRide._id} to captain ${captain._id}`);
-                sendMessageToSocketId(
-                    captain.socketId,
-                    'new-ride-request', 
-                    populatedRide // Send the ride object with the full user details
-                );
-            }
-        });
-
-        // 5. Respond to the user's app.
         return res.status(201).json(populatedRide);
         
     } catch (err) {
@@ -80,23 +71,28 @@ module.exports.acceptRide = async (req, res) => {
         const { rideId, otp } = req.body;
         const captainId = req.captain._id;
 
-        // Find the ride and check the OTP
         const ride = await RideModel.findById(rideId);
 
         if (!ride) {
             return res.status(404).json({ message: "Ride not found." });
         }
 
-        if (ride.otp !== otp) {
+        // ✨ --- CRITICAL FIX: Check if ride is still available --- ✨
+        if (ride.status !== 'pending') {
+            return res.status(409).json({ message: "This ride has already been taken." }); // 409 means "Conflict"
+        }
+
+        // Using String() makes the comparison safer against different data types (e.g., "2410" vs 2410)
+        if (String(ride.otp) !== String(otp)) {
             return res.status(400).json({ message: "Invalid OTP." });
         }
 
-        // Update the ride with the captain's ID and change status to 'accepted'
+        // Update the ride with the captain's ID and change status
         ride.captain = captainId;
         ride.status = 'accepted';
         await ride.save();
         
-        // Populate the user and captain details to send back
+        // Populate details to send back
         const populatedRide = await RideModel.findById(rideId)
             .populate('user', 'fullName socketId')
             .populate('captain', 'fullName vehicle socketId');
@@ -109,6 +105,9 @@ module.exports.acceptRide = async (req, res) => {
                 populatedRide
             );
         }
+        
+        // Also, notify all other captains that this ride is no longer available
+        broadcastToCaptains('ride-taken', { rideId: ride._id });
 
         // Send a success response to the captain's app
         res.status(200).json({ message: "Ride accepted successfully!", ride: populatedRide });

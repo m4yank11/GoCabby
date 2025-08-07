@@ -104,6 +104,23 @@ const UserHome = () => {
     };
   }, [socket, receiveMessage]);
 
+  // --- THE FIX: Listen for ride acceptance ---
+  useEffect(() => {
+    if (socket && receiveMessage) {
+      receiveMessage('ride-accepted', (acceptedRide) => {
+        console.log("Ride has been accepted by a captain:", acceptedRide);
+        setRide(acceptedRide); // Update the ride state with captain details
+        setVehicleFound(false); // Hide the "Looking for driver" panel
+        setWaitingForDriver(true); // Show the "Waiting for driver" panel
+      });
+    }
+    // Cleanup the listener when the component unmounts
+    return () => {
+      if (socket) {
+        socket.off('ride-accepted');
+      }
+    };
+  }, [socket, receiveMessage]);
 
 
   const submitHandler = (e) => {
@@ -347,6 +364,7 @@ async function findTripFare() {
         style={{ transform: 'translateY(100%)' }}
       >
         <LookingForDriver 
+          ride={ride}
           createRide={createRide}
           pickup={pickup}
           destination={destination}
@@ -361,7 +379,9 @@ async function findTripFare() {
         className="fixed w-full bottom-0 translate-y-full bg-white px-3 py-6 pt-12 z-20"
         style={{ transform: 'translateY(100%)' }}
       >
-        <WaitingForDriver waitingForDriver={waitingForDriver} />
+        <WaitingForDriver 
+        ride={ride}
+        waitingForDriver={waitingForDriver} />
       </div>
     </div>
   )
