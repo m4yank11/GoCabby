@@ -1,6 +1,6 @@
 const rideService = require('../services/ride.service');
 const { validationResult } = require('express-validator');
-const CaptainModel = require('../models/Captain.model');
+const CaptainModel = require('../models/captain.model');
 const { sendMessageToSocketId } = require('../socket');
 const RideModel = require('../models/ride.model'); // Import the RideModel
 const { sendMessageToUser } = require('../socket');
