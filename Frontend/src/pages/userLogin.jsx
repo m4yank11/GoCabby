@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react'
 import logo2 from '../assets/logo2.png'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import {UserDataContext} from '../context/userContext'
+import {UserDataContext} from '../context/UserContext'
 
 const UserLogin = () => {
 

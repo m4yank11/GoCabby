@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom'
 import { CaptainDataContext } from '../context/CaptainContext.jsx'
 
 
+
 const UserHome = () => {
   const [pickup, setPickup] = useState('')
   const [destination, setDestination] = useState('')
@@ -87,40 +88,31 @@ const UserHome = () => {
   }, [user, socket, sendMessage]);
 
 
-  // --- NEW: useEffect to listen for ride acceptance ---
   useEffect(() => {
+    // Ensure the socket connection and receiveMessage function are ready
     if (socket && receiveMessage) {
+      // Listen for the 'ride-accepted' event from the server
       receiveMessage('ride-accepted', (acceptedRide) => {
         console.log("Ride has been accepted by a captain:", acceptedRide);
-        setRide(acceptedRide); // Update the ride state with captain details
-        setVehicleFound(false); // Hide the "Looking for driver" panel
-        setWaitingForDriver(true); // Show the "Waiting for driver" panel
+        
+        // Update the ride state with the complete ride object, which now includes captain details
+        setRide(acceptedRide); 
+        
+        // Hide the "Looking for driver" panel and show the "Waiting for driver" panel
+        setVehicleFound(false); 
+        setWaitingForDriver(true); 
       });
     }
-    return () => {
-      if (socket) {
-        socket.off('ride-accepted');
-      }
-    };
-  }, [socket, receiveMessage]);
 
-  // --- THE FIX: Listen for ride acceptance ---
-  useEffect(() => {
-    if (socket && receiveMessage) {
-      receiveMessage('ride-accepted', (acceptedRide) => {
-        console.log("Ride has been accepted by a captain:", acceptedRide);
-        setRide(acceptedRide); // Update the ride state with captain details
-        setVehicleFound(false); // Hide the "Looking for driver" panel
-        setWaitingForDriver(true); // Show the "Waiting for driver" panel
-      });
-    }
-    // Cleanup the listener when the component unmounts
+    // Cleanup function: This is important to prevent memory leaks.
+    // It removes the event listener when the component unmounts.
     return () => {
       if (socket) {
         socket.off('ride-accepted');
       }
     };
-  }, [socket, receiveMessage]);
+  }, [socket, receiveMessage]); // This effect runs when socket or receiveMessage changes
+
 
 
   const submitHandler = (e) => {
