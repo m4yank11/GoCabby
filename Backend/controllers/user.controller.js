@@ -1,6 +1,6 @@
 const blacklistTokenModel = require('../models/blacklistToken.model')
-const UserModel = require('../models/User.model')
-const UserService = require('../services/User.service')
+const UserModel = require('../models/user.model')
+const UserService = require('../services/user.service')
 const { validationResult } = require('express-validator')
 
 module.exports.registerUser = async (req, res, next) => {
@@ -43,12 +43,12 @@ module.exports.loginUser = async (req, res, next) => {
 
     const User = await UserModel.findOne( {email} ).select('+password')
     if(!User){
-        res.status(401).json({ message: 'Invalid email or password' })
+        return res.status(401).json({ message: 'Invalid email or password' })
     }
 
     const isMatch = await User.comparePassword(password)
     if(!isMatch){
-        res.status(401).json({ message: 'Invalid email or password' })
+        return res.status(401).json({ message: 'Invalid email or password' })
     }
 
     const token = User.generateAuthToken()
@@ -64,10 +64,11 @@ module.exports.getUserProfile = async(req, res, next) => {
 
 module.exports.logoutUser = async (req, res, next) => {
 
-    res.clearCookie('token')
-
     // Clear the token from cookies or headers
     const token = req.cookies.token || req.headers.authorization.split(' ')[1]
+    if (!token) {
+        return res.status(400).json({ message: 'No token found' })
+    }
     await blacklistTokenModel.create({ token })
     // This will prevent the token from being used again in the future.
 
