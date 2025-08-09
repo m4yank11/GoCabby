@@ -225,7 +225,7 @@ async function findTripFare() {
       return;
     }
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/Ride/create`, {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/ride/create`, {
         pickup,
         destination,
         vehicleType 
