@@ -25,6 +25,8 @@ const ConfirmRidePopUp = ({ ride, setConfirmRidePopUpPanel, setRidePopUpPanel })
       alert("Please enter a valid 4-digit OTP.");
       return;
     }
+    console.log(`Attempting to accept ride ${ride._id} with OTP:`, Otp);
+    console.log(`Type of OTP state: ${typeof otp}, Length: ${Otp.length}`);
 
     try {
       const response = await axios.post(
