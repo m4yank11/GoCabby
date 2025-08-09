@@ -48,7 +48,7 @@ const FinishRide = ({ ride, setFinishRidePanel }) => {
                 <div className="flex items-center justify-between mt-4 rounded-lg p-4 border-2 border-yellow-300">
                     <div className="flex items-center justify-start gap-3">
                         {/* You can add a dynamic user image here later if available */}
-                        <img className="h-10 w-10 rounded-full object-cover" src="https://...default-user.png" alt="User" />
+                        <img className="h-10 w-10 rounded-full object-cover" src="https://via.placeholder.com/40" alt="User" />
                         <h2 className="text-lg font-medium">{ride.user.fullName.firstName} {ride.user.fullName.lastName}</h2>
                     </div>
                     <div>

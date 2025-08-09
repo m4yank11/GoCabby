@@ -55,8 +55,15 @@ function broadcastToCaptains(event, data) {
     }
 }
 
+function sendMessageToUserRoom(userId, event, data) {
+    if (io) {
+        io.to(`user_${userId}`).emit(event, data);
+    }
+}
+
 module.exports = { 
   initializeSocket, 
   sendMessageToSocketId, 
-  broadcastToCaptains // Export the new function
+  broadcastToCaptains,
+  sendMessageToUserRoom
 };

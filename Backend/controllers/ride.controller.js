@@ -2,9 +2,8 @@ const rideService = require('../services/ride.service');
 const { validationResult } = require('express-validator');
 const CaptainModel = require('../models/captain.model');
 const { sendMessageToSocketId } = require('../socket');
-const RideModel = require('../models/ride.model'); // Import the RideModel
-const { sendMessageToUser } = require('../socket');
-const { broadcastToCaptains } = require('../socket')
+const RideModel = require('../models/ride.model')
+const { sendMessageToUserRoom, broadcastToCaptains } = require('../socket')
 
 
 module.exports.createRide = async (req, res) => {
@@ -99,11 +98,11 @@ module.exports.acceptRide = async (req, res) => {
 
         // Notify the user that their ride has been accepted
         if (populatedRide.user && populatedRide.user.socketId) {
-            sendMessageToSocketId(
-                populatedRide.user.socketId,
+            sendMessageToUserRoom(
+                populatedRide.user._id,
                 'ride-accepted',
                 populatedRide
-            );
+            )
         }
         
         // Also, notify all other captains that this ride is no longer available
