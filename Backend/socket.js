@@ -9,7 +9,8 @@ function initializeSocket(server) {
     cors: {
       origin: [
         'http://localhost:5173', 
-        'https://go-cabby.vercel.app/'
+        'https://go-cabby.vercel.app',
+        'https://gocabby-1.onrender.com'
       ],
       methods: ["GET", "POST"]
     }
