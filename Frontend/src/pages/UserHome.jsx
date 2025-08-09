@@ -90,7 +90,7 @@ const UserHome = () => {
 
   useEffect(() => {
     // Ensure the socket connection and receiveMessage function are ready
-    if (socket && receiveMessage) {
+    if (socket && receiveMessage && user) {
       // Listen for the 'ride-accepted' event from the server
       receiveMessage('ride-accepted', (acceptedRide) => {
         console.log("Ride has been accepted by a captain:", acceptedRide);
@@ -102,6 +102,7 @@ const UserHome = () => {
         setVehicleFound(false); 
         setWaitingForDriver(true); 
       });
+
     }
 
     // Cleanup function: This is important to prevent memory leaks.
@@ -111,7 +112,7 @@ const UserHome = () => {
         socket.off('ride-accepted');
       }
     };
-  }, [socket, receiveMessage]); // This effect runs when socket or receiveMessage changes
+  }, [socket, receiveMessage, user]); // This effect runs when socket or receiveMessage changes
 
 
 
