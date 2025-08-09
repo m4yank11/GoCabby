@@ -34,5 +34,11 @@ router.post('/accept',
     rideController.acceptRide
 );
 
+router.post('/complete',
+    authMiddleware.authCaptain, // Ensure a captain is making this request
+    body('rideId').isMongoId().withMessage('Invalid Ride ID'),
+    rideController.completeRide // We will create this controller function next
+);
+
 
 module.exports = router

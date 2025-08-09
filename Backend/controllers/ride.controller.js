@@ -117,3 +117,52 @@ module.exports.acceptRide = async (req, res) => {
         res.status(500).json({ message: "Server error while accepting ride." });
     }
 };
+
+module.exports.completeRide = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+        const { rideId } = req.body;
+        const captainId = req.captain._id;
+
+        const ride = await RideModel.findById(rideId);
+
+        if (!ride) {
+            return res.status(404).json({ message: "Ride not found." });
+        }
+
+        // Ensure the ride is accepted and belongs to this captain
+        if (ride.status !== 'accepted' || String(ride.captain) !== String(captainId)) {
+            return res.status(403).json({ message: "You are not authorized to complete this ride." });
+        }
+
+        // Update the ride status to completed
+        ride.status = 'completed';
+        await ride.save();
+
+        // Notify the user that their ride has been completed
+        if (ride.user && ride.user.socketId) {
+            sendMessageToSocketId(
+                ride.user.socketId,
+                'ride-completed',
+                { message: "Your ride has been completed successfully.", ride }
+            );
+        }
+
+        // Optionally, notify the captain as well
+        sendMessageToSocketId(
+            req.captain.socketId,
+            'ride-completed',
+            { message: "You have successfully completed the ride.", ride }
+        );
+
+        res.status(200).json({ message: "Ride completed successfully!", ride });
+
+    } catch (error) {
+        console.error("Error completing ride:", error);
+        res.status(500).json({ message: "Server error while completing ride." });
+    }
+};
