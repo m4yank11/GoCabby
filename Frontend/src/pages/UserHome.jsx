@@ -57,7 +57,7 @@ const UserHome = () => {
           return;
         }
         // Assuming you have a '/User/profile' endpoint
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/User/profile`, {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/user/profile`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUser(response.data.user); // Update context with user data
@@ -199,7 +199,7 @@ async function findTripFare() {
     }
     
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/Ride/get-fare`, { 
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/ride/get-fare`, { 
         params: { pickup, destination },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`

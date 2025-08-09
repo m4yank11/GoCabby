@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import logo2 from '../assets/logo2.png'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -12,7 +12,7 @@ const UserSignUp = () => {
     const [lastName, setLastName] = useState('')
 
     const navigate = useNavigate()
-    const [user, setUser] = React.useContext(UserDataContext) 
+    const {setUser} = useContext(UserDataContext) 
 
     const submitHandler = async (e) => {
         e.preventDefault()

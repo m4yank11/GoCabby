@@ -1,36 +1,36 @@
-import React , {useEffect} from 'react'
+import React , {useEffect, useContext} from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { UserDataContext } from '../context/UserContext';
 
 
-const UserLogout = async () => {
+const UserLogout = () => {
+  const navigate = useNavigate();
+  const { setUser } = useContext(UserDataContext); // Get setUser from context
 
-    const token = localStorage.getItem('token')
-    const navigate = useNavigate()
-
-    try {
-
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/user/logout`,{
-        headers: {
+  useEffect(() => {
+    const logout = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        await axios.get(`${import.meta.env.VITE_BASE_URL}/user/logout`, {
+          headers: {
             Authorization: `Bearer ${token}`
-        }
-    }).then((response) => {
-        if(response.status === 200){
-            localStorage.removeItem('token')
-            navigate('/UserLogin')
-        }
-    })
+          }
+        });
+      } catch (error) {
+        console.error("❌ Logout failed:", error.response?.data || error.message);
+      } finally {
+        // This should run regardless of whether the API call succeeds or fails
+        localStorage.removeItem('token');
+        setUser(null); // Clear the user state in the context
+        navigate('/UserLogin');
+      }
+    };
+    logout();
+  }, [navigate, setUser]); // Add dependencies
 
+  // Render null or a loading message while logging out
+  return null;
+};
 
-    } catch (error) {
-        console.error("❌ Logout failed:", error.response?.data || error.message)
-    }
-
-  return (
-    <div>
-      UserLogout
-    </div>
-  )
-}
-
-export default UserLogout
+export default UserLogout;

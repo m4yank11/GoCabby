@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import logo2 from '../assets/logo2.png'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useRef } from 'react';
 import FinishRide from '../components/FinishRide';
 import gsap from 'gsap'
@@ -11,6 +11,8 @@ const CaptainRiding = () => {
   const [finishRidePanel, setFinishRidePanel] = useState(false);
 
   const finishRidePanelRef = useRef(null)
+  const location = useLocation();
+  const ride = location.state?.ride;
 
     useGSAP(function() {
     if (finishRidePanel  ) {
@@ -23,6 +25,15 @@ const CaptainRiding = () => {
       })
     }
   }, [finishRidePanel])
+
+  if (!ride) {
+        return (
+            <div className='flex items-center justify-center h-screen'>
+                <p>Loading ride data or direct access not allowed.</p>
+                <Link to="/CaptainHome">Go Home</Link>
+            </div>
+        );
+    }
 
   return (
     <div className='h-screen'>
@@ -53,7 +64,7 @@ const CaptainRiding = () => {
         <div 
         ref={finishRidePanelRef} 
         className="fixed w-full bottom-0  bg-white px-3 py-6 pt-12 z-20 tranlate-y-full">
-           <FinishRide setFinishRidePanel= {setFinishRidePanel}/>
+           <FinishRide ride={ride} setFinishRidePanel= {setFinishRidePanel}/>
         </div>
     </div>
   )

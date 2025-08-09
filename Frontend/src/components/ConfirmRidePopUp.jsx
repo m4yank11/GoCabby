@@ -28,7 +28,7 @@ const ConfirmRidePopUp = ({ ride, setConfirmRidePopUpPanel, setRidePopUpPanel })
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/Ride/accept`,
+        `${import.meta.env.VITE_BASE_URL}/ride/accept`,
         {
           rideId: ride._id,
           otp: Otp,
@@ -42,7 +42,7 @@ const ConfirmRidePopUp = ({ ride, setConfirmRidePopUpPanel, setRidePopUpPanel })
 
       if (response.status === 200) {
         console.log("Ride accepted successfully!", response.data.ride);
-        navigate('/CaptainRiding');
+        navigate('/CaptainRiding', { state: { ride: response.data.ride } });
       }
     } catch (error) {
       console.error("Failed to accept ride:", error.response?.data?.message || error.message);

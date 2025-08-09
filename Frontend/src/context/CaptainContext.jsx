@@ -8,7 +8,7 @@ const CaptainContext = ({ children }) => {
     const [ error, setError ] = useState(null);
 
     const updateCaptain = (captainData) => {
-        setCaptain(response.data.captain);
+        setCaptain(captainData);
     };
 
     const value = {

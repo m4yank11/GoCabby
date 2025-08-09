@@ -63,7 +63,7 @@ const CaptainSignUp = () => {
 
 
     return (
-        <div className='min-h-screen flex flex-col justify-between px-5 px-5'>
+        <div className='min-h-screen flex flex-col justify-between px-5 py-5'>
 
         {/* Header with Logo */}
         <div >

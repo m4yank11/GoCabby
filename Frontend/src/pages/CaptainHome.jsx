@@ -9,7 +9,6 @@ import ConfirmRidePopUp from '../components/ConfirmRidePopUp';
 import axios from 'axios';
 import { CaptainDataContext } from '../context/CaptainContext';
 import { SocketContext } from '../context/SocketContext';
-import { UserDataContext } from '../context/UserContext';
 
 
 const CaptainHome = () => {
@@ -43,7 +42,7 @@ useEffect(() => {
             navigate('/CaptainLogin');
             return;
           }
-          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/Captain/profile`, {
+          const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/captain/profile`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           setCaptain(response.data.captain);
