@@ -16,8 +16,8 @@ connectToDb()
 
 app.use(cors({
     origin: [
-        'http://localhost:5173', // for local testing
-        'https://go-cabby.vercel.app/' // for production
+        'http://localhost:5173',          // For local testing
+        'https://go-cabby.vercel.app'    // Your Vercel frontend URL (NO slash)
     ],
     credentials: true
 }));

@@ -8,9 +8,8 @@ function initializeSocket(server) {
   io = socketIO(server, {
     cors: {
       origin: [
-        'http://localhost:5173', 
-        'https://go-cabby.vercel.app',
-        'https://gocabby-1.onrender.com'
+        'http://localhost:5173',
+        'https://go-cabby.vercel.app'    // Your Vercel frontend URL
       ],
       methods: ["GET", "POST"]
     }
