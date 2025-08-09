@@ -14,7 +14,13 @@ const RideRoute = require('./routes/ride.route')
 connectToDb()
 
 
-app.use(cors())
+app.use(cors({
+    origin: [
+        'http://localhost:5173', // for local testing
+        'https://go-cabby.vercel.app/' // for production
+    ],
+    credentials: true
+}));
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())

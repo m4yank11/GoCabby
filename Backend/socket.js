@@ -7,7 +7,10 @@ let io;
 function initializeSocket(server) {
   io = socketIO(server, {
     cors: {
-      origin: "*",
+      origin: [
+        'http://localhost:5173', 
+        'https://go-cabby.vercel.app/'
+      ],
       methods: ["GET", "POST"]
     }
   });
