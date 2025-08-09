@@ -82,7 +82,7 @@ const UserHome = () => {
     // This guard clause prevents the code from running before user data is loaded
     if (user && user._id && socket) {
       console.log(`User ${user._id} joining socket room.`);
-      sendMessage("join", { userType: "user", userId: user._id });
+      sendMessage("join", { role: "user", userId: user._id });
     }
     // This effect runs whenever the user or socket connection changes
   }, [user, socket, sendMessage]);
