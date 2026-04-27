@@ -1,6 +1,6 @@
 import React from 'react';
 
-const WaitingForDriver = ({ ride, setWaitingForDriver }) => {
+const WaitingForDriver = ({ ride, setWaitingForDriver, liveCaptainDistance }) => {
   // --- FIX 1: Make the guard clause more robust ---
   // This checks for the captain object and its nested properties (fullName, vehicle)
   // before trying to render the component.
@@ -25,12 +25,19 @@ const WaitingForDriver = ({ ride, setWaitingForDriver }) => {
       </h5>
 
       <div className='flex items-center justify-between'>
-        <img className='h-14' src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg" alt="Vehicle" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/56x56/CCCCCC/FFFFFF?text=Car'; }}/>
+        <img className='h-14' src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg" alt="Vehicle" onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/56x56/CCCCCC/FFFFFF?text=Car'; }} />
         <div className='text-right'>
           {/* Now we can safely display the dynamic info */}
           <h2 className='text-lg font-medium'>{fullName.firstName} {fullName.lastName}</h2>
           <h4 className='text-xl font-semibold -mt-1'>{vehicle.plate}</h4>
           <p className='text-sm text-gray-600 -mt-1'>{vehicle.color} {vehicle.type}</p>
+
+          {/* Dynamic Live Distance tracking */}
+          <div className="bg-yellow-100 px-3 py-1 rounded-full inline-block mt-2 shadow-sm border border-yellow-300">
+            <h3 className="text-sm font-bold text-yellow-700">
+              {liveCaptainDistance ? `Arriving gently in ${liveCaptainDistance} km` : "Tracking captain..."}
+            </h3>
+          </div>
         </div>
       </div>
 
@@ -51,7 +58,7 @@ const WaitingForDriver = ({ ride, setWaitingForDriver }) => {
               <p className='text-base -mt-1 text-gray-600'>Destination</p>
             </div>
           </div>
-          
+
           <div className='flex items-center gap-4 p-3'>
             <i className="text-lg ri-money-rupee-circle-fill"></i>
             <div>

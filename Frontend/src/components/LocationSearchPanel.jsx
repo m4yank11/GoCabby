@@ -16,7 +16,7 @@ const LocationSearchPanel = (props) => {
           const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/Maps/get-suggestions`, {
             params: { input: query },
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`
+              Authorization: `Bearer ${localStorage.getItem('token')}`
             }
           })
           setSuggestions(response.data)
@@ -28,10 +28,10 @@ const LocationSearchPanel = (props) => {
       }
     }
 
-    // Debounce the API call for 300 ms
+    // Debounce the API call for 1200 ms to respect Nominatim usage policy (1/sec)
     const debounceTimer = setTimeout(() => {
       fetchSuggestions()
-    }, 300)
+    }, 1200)
 
     return () => clearTimeout(debounceTimer)
   }, [query])

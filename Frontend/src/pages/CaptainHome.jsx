@@ -31,7 +31,7 @@ const CaptainHome = () => {
 
   // The useEffect hook should have an empty dependency array [] to ensure it
   // runs only once when the component mounts. This is the standard pattern for initial data fetching and prevents infinite loops.
-useEffect(() => {
+  useEffect(() => {
     const fetchCaptainProfile = async () => {
       // Only fetch if captain data is not already loaded
       if (!captain) {
@@ -73,22 +73,22 @@ useEffect(() => {
 
   // --- Listen for new ride requests ---
   useEffect(() => {
-        if (socket && receiveMessage) {
-            // Listen for the 'new-ride-request' event from the server
-            receiveMessage('new-ride-request', (newRide) => {
-                console.log("New ride request received:", newRide);
-                setRideRequest(newRide); // Store the ride data
-                setRidePopUpPanel(true); // Show the ride request pop-up
-            });
-        }
+    if (socket && receiveMessage) {
+      // Listen for the 'new-ride-request' event from the server
+      receiveMessage('new-ride-request', (newRide) => {
+        console.log("New ride request received:", newRide);
+        setRideRequest(newRide); // Store the ride data
+        setRidePopUpPanel(true); // Show the ride request pop-up
+      });
+    }
 
-        // Clean up the listener when the component unmounts
-        return () => {
-            if (socket) {
-                socket.off('new-ride-request');
-            }
-        };
-    }, [socket, receiveMessage]);
+    // Clean up the listener when the component unmounts
+    return () => {
+      if (socket) {
+        socket.off('new-ride-request');
+      }
+    };
+  }, [socket, receiveMessage]);
 
   useGSAP(() => { if (ridePopUpPanel) { gsap.to(ridePopUpPanelRef.current, { y: '0%' }); } else { gsap.to(ridePopUpPanelRef.current, { y: '100%' }); } }, [ridePopUpPanel]);
   useGSAP(() => { if (confirmRidePopUpPanel) { gsap.to(confirmRidePopUpPanelRef.current, { y: '0%' }); } else { gsap.to(confirmRidePopUpPanelRef.current, { y: '100%' }); } }, [confirmRidePopUpPanel]);
@@ -97,10 +97,12 @@ useEffect(() => {
 
     <div className="relative h-screen flex flex-col">
       <div className='absolute p-5 top-0 flex items-center justify-between w-full z-10'>
-        <Link to='/CaptainLogin' className='h-10 w-10 bg-white flex items-center justify-center rounded-full'>
+        <Link to='/CaptainLogin' className='h-10 w-10 bg-white/80 backdrop-blur-md shadow-lg flex items-center justify-center rounded-full hover:bg-white transition-all'>
           <i className="text-lg font-medium ri-logout-box-line"></i>
         </Link>
-        <img className="w-25" src={logo2} alt="GoCabby logo" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/100x40/000000/FFFFFF?text=Logo'; }}/>
+        <div className="bg-white/80 backdrop-blur-md px-3 py-1 rounded-full shadow-lg">
+          <img className="w-20" src={logo2} alt="GoCabby logo" onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/100x40/000000/FFFFFF?text=Logo'; }} />
+        </div>
       </div>
 
 
@@ -111,16 +113,17 @@ useEffect(() => {
           alt="Map background"
         />
       </div>
-      
+
       {/* Captain Details Panel */}
-      <div className='p-5 bg-white'>
+      <div className='p-6 bg-white rounded-t-3xl shadow-[0_-15px_40px_-15px_rgba(0,0,0,0.15)] relative z-10 -mt-10'>
         <CaptainDetails />
       </div>
 
       {/* Ride pop up Panel */}
       <div
         ref={ridePopUpPanelRef}
-        className="fixed w-full bottom-0  bg-white px-3 py-6 pt-12 z-20 translate-y-full">
+        className="fixed w-full bottom-0 bg-white/95 backdrop-blur-xl shadow-[0_-20px_50px_-15px_rgba(0,0,0,0.3)] rounded-t-3xl px-4 py-8 z-30 translate-y-full transition-all duration-300">
+        <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4"></div>
         <RidePopUp
           ride={rideRequest}
           setRidePopUpPanel={setRidePopUpPanel}
@@ -129,11 +132,11 @@ useEffect(() => {
 
       <div
         ref={confirmRidePopUpPanelRef}
-
-        className="fixed w-full bottom-0 h-screen bg-white px-3 py-6 pt-12 z-20 translate-y-full">
-        <ConfirmRidePopUp 
-          ride= { rideRequest }
-          setConfirmRidePopUpPanel={setConfirmRidePopUpPanel} 
+        className="fixed w-full bottom-0 h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-xl shadow-[0_-20px_50px_-15px_rgba(0,0,0,0.3)] rounded-t-3xl px-4 py-6 z-40 translate-y-full transition-all duration-300">
+        <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4 shrink-0"></div>
+        <ConfirmRidePopUp
+          ride={rideRequest}
+          setConfirmRidePopUpPanel={setConfirmRidePopUpPanel}
           setRidePopUpPanel={setRidePopUpPanel} />
       </div>
     </div>

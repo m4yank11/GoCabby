@@ -18,18 +18,23 @@ function initializeSocket(server) {
   io.on('connection', (socket) => {
     console.log(`New client connected: ${socket.id}`);
 
-    socket.on('join', async(data) => {
-        const { userId, role } = data;
-        if (role === 'user') {
-            await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
-            socket.join(`user_${userId}`);
-            console.log(`User ${userId} joined room`);
-        } else if (role === 'captain') {
-            await captainModel.findByIdAndUpdate(userId, { socketId: socket.id });
-            // ✨ CHANGE 1: Add every online captain to a single, shared room
-            socket.join('available_captains_room'); 
-            console.log(`Captain ${userId} joined the 'available_captains_room'`);
-        }
+    socket.on('join', async (data) => {
+      const { userId, role } = data;
+      if (role === 'user') {
+        await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
+        socket.join(`user_${userId}`);
+        console.log(`User ${userId} joined room`);
+      } else if (role === 'captain') {
+        await captainModel.findByIdAndUpdate(userId, { socketId: socket.id });
+        // ✨ CHANGE 1: Add every online captain to a single, shared room
+        socket.join('available_captains_room');
+        console.log(`Captain ${userId} joined the 'available_captains_room'`);
+      }
+    });
+
+    socket.on('update-location-captain', (data) => {
+      const { userId, location } = data;
+      sendMessageToUserRoom(userId, 'update-location-captain', data);
     });
 
     socket.on('disconnect', async () => {
@@ -50,20 +55,20 @@ function sendMessageToSocketId(socketId, event, message) {
 
 // ✨ CHANGE 3: Create a new function to broadcast to the captains' room
 function broadcastToCaptains(event, data) {
-    if (io) {
-        io.to('available_captains_room').emit(event, data);
-    }
+  if (io) {
+    io.to('available_captains_room').emit(event, data);
+  }
 }
 
 function sendMessageToUserRoom(userId, event, data) {
-    if (io) {
-        io.to(`user_${userId}`).emit(event, data);
-    }
+  if (io) {
+    io.to(`user_${userId}`).emit(event, data);
+  }
 }
 
-module.exports = { 
-  initializeSocket, 
-  sendMessageToSocketId, 
+module.exports = {
+  initializeSocket,
+  sendMessageToSocketId,
   broadcastToCaptains,
   sendMessageToUserRoom
 };

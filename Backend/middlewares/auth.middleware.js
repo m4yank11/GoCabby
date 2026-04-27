@@ -5,10 +5,10 @@ const blacklistTokenModel = require('../models/blacklistToken.model');
 const CaptainModel = require('../models/captain.model');
 
 module.exports.authUser = async (req, res, next) => {
-    
+
     const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
 
-    if(!token){
+    if (!token) {
         return res.status(401).json({ message: 'Unauthorized: No token provided.' });
     }
 
@@ -20,7 +20,7 @@ module.exports.authUser = async (req, res, next) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await UserModel.findById(decoded._id);
-        
+
         if (!user) {
             return res.status(401).json({ message: 'Unauthorized: User not found.' });
         }
@@ -29,27 +29,27 @@ module.exports.authUser = async (req, res, next) => {
         // We assign the user object to BOTH req.user (the correct convention)
         // and req.User (to support your older code). This prevents anything
         // from breaking while you update your codebase.
-        req.user = user; 
+        req.user = user;
         req.User = user; // For backward compatibility
 
         next();
     }
-    catch(err){
+    catch (err) {
         if (err.name === 'JsonWebTokenError') {
-            return res.status(401).json({message: 'Unauthorized: Invalid token.'});
+            return res.status(401).json({ message: 'Unauthorized: Invalid token.' });
         }
         console.error("Auth Middleware Error:", err);
-        return res.status(500).json({message: 'An internal error occurred during authentication.'});
+        return res.status(500).json({ message: 'An internal error occurred during authentication.' });
     }
 };
 
-module.exports.authCaptain = async (req, res, next)=> {
+module.exports.authCaptain = async (req, res, next) => {
     const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-    
-    if(!token){
+
+    if (!token) {
         return res.status(401).json({ message: 'Unauthorized: No token provided.' });
     }
-    
+
     try {
         const isBlacklisted = await blacklistTokenModel.findOne({ token });
         if (isBlacklisted) {
@@ -58,7 +58,7 @@ module.exports.authCaptain = async (req, res, next)=> {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const captain = await CaptainModel.findById(decoded._id);
-        
+
         if (!captain) {
             return res.status(401).json({ message: 'Unauthorized: Captain not found.' });
         }
@@ -68,9 +68,32 @@ module.exports.authCaptain = async (req, res, next)=> {
         next();
     } catch (err) {
         if (err.name === 'JsonWebTokenError') {
-            return res.status(401).json({message: 'Unauthorized: Invalid token.'});
+            return res.status(401).json({ message: 'Unauthorized: Invalid token.' });
         }
         console.error("Auth Captain Middleware Error:", err);
+        return res.status(500).json({ message: 'An internal error occurred during authentication.' });
+    }
+};
+
+module.exports.authAny = async (req, res, next) => {
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+    if (!token) { return res.status(401).json({ message: 'Unauthorized: No token provided.' }); }
+
+    try {
+        const isBlacklisted = await blacklistTokenModel.findOne({ token });
+        if (isBlacklisted) return res.status(401).json({ message: 'Unauthorized: Token is blacklisted.' });
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        let user = await UserModel.findById(decoded._id);
+        if (user) { req.user = user; return next(); }
+
+        let captain = await CaptainModel.findById(decoded._id);
+        if (captain) { req.captain = captain; return next(); }
+
+        return res.status(401).json({ message: 'Unauthorized: User or Captain not found.' });
+    } catch (err) {
+        if (err.name === 'JsonWebTokenError') return res.status(401).json({ message: 'Unauthorized: Invalid token.' });
         return res.status(500).json({ message: 'An internal error occurred during authentication.' });
     }
 };

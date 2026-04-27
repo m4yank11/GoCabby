@@ -9,7 +9,7 @@ import ConfirmRide from '../components/ConfirmRide'
 import LookingForDriver from '../components/LookingForDriver'
 import WaitingForDriver from '../components/WaitingForDriver'
 import axios from 'axios'
-import {SocketContext} from '../context/SocketContext.jsx'
+import { SocketContext } from '../context/SocketContext.jsx'
 import { UserDataContext } from '../context/UserContext.jsx'
 import { useNavigate } from 'react-router-dom'
 import { CaptainDataContext } from '../context/CaptainContext.jsx'
@@ -24,6 +24,7 @@ const UserHome = () => {
   const [confirmRidePanel, setConfirmRidePanel] = useState(false)
   const [vehicleFound, setVehicleFound] = useState(false)
   const [waitingForDriver, setWaitingForDriver] = useState(false)
+  const [liveCaptainDistance, setLiveCaptainDistance] = useState(null)
 
 
   // We need a state to track which input field is currently active.
@@ -68,12 +69,12 @@ const UserHome = () => {
         setIsLoading(false);
       }
     };
-    
+
     // Only fetch if user data isn't already present
     if (!user) {
-        fetchUserProfile();
+      fetchUserProfile();
     } else {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   }, []); // Empty array ensures this runs only once on mount
 
@@ -94,15 +95,18 @@ const UserHome = () => {
       // Listen for the 'ride-accepted' event from the server
       receiveMessage('ride-accepted', (acceptedRide) => {
         console.log("Ride has been accepted by a captain:", acceptedRide);
-        
+
         // Update the ride state with the complete ride object, which now includes captain details
-        setRide(acceptedRide); 
-        
+        setRide(acceptedRide);
+
         // Hide the "Looking for driver" panel and show the "Waiting for driver" panel
-        setVehicleFound(false); 
-        setWaitingForDriver(true); 
+        setVehicleFound(false);
+        setWaitingForDriver(true);
       });
 
+      receiveMessage('update-location-captain', (data) => {
+        setLiveCaptainDistance(data.distance);
+      });
     }
 
     // Cleanup function: This is important to prevent memory leaks.
@@ -110,6 +114,7 @@ const UserHome = () => {
     return () => {
       if (socket) {
         socket.off('ride-accepted');
+        socket.off('update-location-captain');
       }
     };
   }, [socket, receiveMessage, user]); // This effect runs when socket or receiveMessage changes
@@ -193,22 +198,22 @@ const UserHome = () => {
     }
   }, [waitingForDriver])
 
-async function findTripFare() {
+  async function findTripFare() {
     if (!pickup || !destination) {
       alert("Please enter both pickup and destination locations.");
       return;
     }
-    
+
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/ride/get-fare`, { 
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/ride/get-fare`, {
         params: { pickup, destination },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       });
-      
+
       console.log("Fare data received:", response.data);
-      setFare(response.data.fare); 
+      setFare(response.data.fare);
       setVehiclePanel(true);
       setOpenPanel(false);
 
@@ -217,7 +222,7 @@ async function findTripFare() {
       alert("Could not fetch fare. Please check the locations and try again.");
     }
   }
- 
+
   // --- CORRECTED FUNCTION ---
   // This function now correctly handles the API call and the UI state transitions.
   async function createRide() {
@@ -229,7 +234,7 @@ async function findTripFare() {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/ride/create`, {
         pickup,
         destination,
-        vehicleType 
+        vehicleType
       }, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -254,7 +259,7 @@ async function findTripFare() {
   return (
     <div className="relative h-screen overflow-hidden">
       {/* Logo */}
-      <img className="w-25 absolute left-3 top-2 z-10" src={logo2} alt="GoCabby logo" onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/100x40/000000/FFFFFF?text=Logo'; }} />
+      <img className="w-25 absolute left-3 top-2 z-10" src={logo2} alt="GoCabby logo" onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/100x40/000000/FFFFFF?text=Logo'; }} />
 
       {/* Background */}
       <div className="h-screen w-screen">
@@ -300,7 +305,7 @@ async function findTripFare() {
             />
           </form>
           <button
-            onClick={() => {findTripFare()}}
+            onClick={() => { findTripFare() }}
             className="bg-black text-white px-4 py-2 rounded-lg mt-3 w-full active:scale-95"
           >
             Find Trip
@@ -311,9 +316,9 @@ async function findTripFare() {
         <div ref={panelRef} className="bg-white h-0 overflow-hidden transition-all">
           {/* --- THE FIX (Part 4) --- */}
           {/* Now 'activeField' is defined and this will work correctly */}
-          <LocationSearchPanel 
-            query={activeField === 'pickup' ? pickup : destination} 
-            setQuery={activeField === 'pickup' ? setPickup : setDestination} 
+          <LocationSearchPanel
+            query={activeField === 'pickup' ? pickup : destination}
+            setQuery={activeField === 'pickup' ? setPickup : setDestination}
             setOpenPanel={setOpenPanel}
             setVehiclePanel={setVehiclePanel}
           />
@@ -326,12 +331,12 @@ async function findTripFare() {
         className="fixed w-full bottom-0 translate-y-full bg-white px-3 py-10 pt-12 z-20"
         style={{ transform: 'translateY(100%)' }}
       >
-        <VehiclePanel 
+        <VehiclePanel
           //createRide={createRide}
-          selectVehicle = {setVehicleType}
-          fare={fare} 
-          setConfirmRidePanel={setConfirmRidePanel} 
-          setVehiclePanel={setVehiclePanel} 
+          selectVehicle={setVehicleType}
+          fare={fare}
+          setConfirmRidePanel={setConfirmRidePanel}
+          setVehiclePanel={setVehiclePanel}
         />
       </div>
 
@@ -341,13 +346,13 @@ async function findTripFare() {
         className="fixed w-full bottom-0 translate-y-full bg-white px-3 py-6 pt-12 z-20"
         style={{ transform: 'translateY(100%)' }}
       >
-        <ConfirmRide 
+        <ConfirmRide
           createRide={createRide}
           pickup={pickup}
           destination={destination}
           fare={fare}
           vehicleType={vehicleType}
-        setConfirmRidePanel={setConfirmRidePanel} setVehicleFound={setVehicleFound} />
+          setConfirmRidePanel={setConfirmRidePanel} setVehicleFound={setVehicleFound} />
       </div>
 
       {/* Vehicle Found Panel */}
@@ -356,14 +361,14 @@ async function findTripFare() {
         className="fixed w-full bottom-0 translate-y-full bg-white px-3 py-6 pt-12 z-20"
         style={{ transform: 'translateY(100%)' }}
       >
-        <LookingForDriver 
+        <LookingForDriver
           ride={ride}
           createRide={createRide}
           pickup={pickup}
           destination={destination}
           fare={fare}
           vehicleType={vehicleType}
-        setVehicleFound={setVehicleFound} />
+          setVehicleFound={setVehicleFound} />
       </div>
 
       {/* Waiting For Driver Panel */}
@@ -372,9 +377,10 @@ async function findTripFare() {
         className="fixed w-full bottom-0 translate-y-full bg-white px-3 py-6 pt-12 z-20"
         style={{ transform: 'translateY(100%)' }}
       >
-        <WaitingForDriver 
-        ride={ride}
-        waitingForDriver={waitingForDriver} />
+        <WaitingForDriver
+          ride={ride}
+          liveCaptainDistance={liveCaptainDistance}
+          waitingForDriver={waitingForDriver} />
       </div>
     </div>
   )

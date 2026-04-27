@@ -34,25 +34,18 @@ const FinishRide = ({ ride, setFinishRidePanel }) => {
     if (!ride) return null;
 
     return (
-        <div className="h-full">
-            <div className="bg-white h-full w-full rounded-t-2xl p-2 ">
-                {/* Close button */}
-                <h5
-                    className="p-1 text-center w-[93%] absolute top-2 left-1/2 -translate-x-1/2 cursor-pointer"
-                    onClick={() => setFinishRidePanel(false)}>
-                    <i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
-                </h5>
-                <h3 className="text-2xl font-semibold mb-8">Finish this Ride</h3>
+        <div className="h-full flex flex-col justify-between">
+            <div className="w-full">
+                <h3 className="text-2xl font-extrabold text-gray-800 text-center mb-6 tracking-tight">Finish this Ride</h3>
 
                 {/* 4. Replace ALL hardcoded data with dynamic data from the 'ride' prop */}
-                <div className="flex items-center justify-between mt-4 rounded-lg p-4 border-2 border-yellow-300">
-                    <div className="flex items-center justify-start gap-3">
-                        {/* You can add a dynamic user image here later if available */}
-                        <img className="h-10 w-10 rounded-full object-cover" src="https://via.placeholder.com/40" alt="User" />
-                        <h2 className="text-lg font-medium">{ride.user.fullName.firstName} {ride.user.fullName.lastName}</h2>
+                <div className="flex items-center justify-between bg-yellow-100/80 border border-yellow-300 rounded-2xl p-4 shadow-sm mb-6">
+                    <div className="flex items-center gap-3">
+                        <img className="h-12 w-12 rounded-full border-2 border-white shadow-md object-cover" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQD7c15mqbUC9Ube6XGhKYSsY9KC2v76CwEJA&s" alt="User" />
+                        <h2 className="text-xl font-bold text-gray-800">{ride.user.fullName.firstName} {ride.user.fullName.lastName}</h2>
                     </div>
-                    <div>
-                        <h4 className="text-lg font-semibold">{(ride.distance / 1000).toFixed(1)} Kms</h4>
+                    <div className="bg-yellow-500 text-white px-3 py-1 rounded-full shadow-sm">
+                        <h4 className="text-sm font-bold tracking-wide">{(ride.distance / 1000).toFixed(1)} Kms</h4>
                     </div>
                 </div>
 

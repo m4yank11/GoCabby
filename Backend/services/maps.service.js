@@ -10,7 +10,7 @@ module.exports.getAddressCoordinates = async (address) => {
                 limit: 1
             },
             headers: {
-                'User-Agent': 'GoCabbyApp/1.0 (mayankrajgupta3112@gmail.com)' 
+                'User-Agent': 'GoCabbyApp/1.0 (mayankrajgupta3112@gmail.com)'
             }
         })
         if (response.data && response.data.length > 0) {
@@ -34,6 +34,10 @@ module.exports.getDistanceTime = async (pickup, destination) => {
 
     // Get coordinates for pickup and destination
     const pickupCoords = await module.exports.getAddressCoordinates(pickup)
+
+    // Nominatim limits requests to 1 per second. Add 1000ms delay before the second request
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
     const destinationCoords = await module.exports.getAddressCoordinates(destination)
 
     // OSRM expects lon,lat;lon,lat
